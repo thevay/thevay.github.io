@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#202020">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+  
+  
+    <meta name="keywords" content="MYSQL,">
+  
+
+  
+    <meta name="description" content="Mysql中注意使用合适的字段和字段长度">
+  
+  
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <title>Mysql中注意使用合适的字段和字段长度 [ landscape ]</title>
+  
+    <!-- stylesheets list from config.yml -->
+    
+      <link rel="stylesheet" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css">
+    
+      <link rel="stylesheet" href="/css/xoxo.css">
+    
+  
+</head>
+
+
+<body>
+  <div class="nav-container">
+    <nav class="home-menu pure-menu pure-menu-horizontal">
+  <a class="pure-menu-heading" href="/">
+    <img class="avatar" src="http://yoursite.com/images/logo.png">
+    <span class="title">landscape</span>
+  </a>
+
+  <ul class="pure-menu-list clearfix">
+      
+          
+            <li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/archives" class="pure-menu-link">Archives</a></li>
+          
+      
+  </ul>
+   
+</nav>
+  </div>
+
+  <div class="container" id="content-outer">
+    <div class="inner" id="content-inner">
+      <div class="post-container">
+  <article class="post" id="post">
+    <header class="post-header text-center">
+      <h1 class="title">
+        Mysql中注意使用合适的字段和字段长度
+      </h1>
+      <span>
+        
+        <time class="time" datetime="2019-08-23T01:18:00.000Z">
+        2019-08-23
+      </time>
+        
+      </span>
+      <span class="slash">/</span>
+      <span class="post-meta">
+      <span class="post-tags">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MYSQL/">MYSQL</a></li></ul>
+      </span>
+    </span>
+      <span class="slash">/</span>
+      <span class="read">
+      <span id="busuanzi_value_page_pv"></span> 点击
+    </span>
+      <span class="slash">/</span>
+      <span class="read">阅读耗时 5分</span>
+    </header>
+
+    <div class="post-content">
+      <h3 id="记录中的常用信息"><a href="#记录中的常用信息" class="headerlink" title="记录中的常用信息"></a>记录中的常用信息</h3><p>下面是mysql创建一条记录时的常用重要信息，一般包含：名称、类型、长度、属性、非空、Zero填充、自增等<br>信息需要进行配置。</p>
+<p><img src="https://thumbnail0.baidupcs.com/thumbnail/63cdc8d8c9458c61a1905a9188de9a36?fid=4052808493-250528-110980498092951&time=1566777600&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-vS7Uu07hIhx97pdhxXoeJaHQqF8%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=5505135106852192192&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video" alt="upload successful"></p>
+<h3 id="字段类型选择"><a href="#字段类型选择" class="headerlink" title="字段类型选择"></a>字段类型选择</h3><p><img src="https://thumbnail0.baidupcs.com/thumbnail/9fafc9f2ebd0c079cae6d75a506e7b53?fid=4052808493-250528-986765735937451&time=1566777600&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-3byQBSvMGL9rERAFLefGE7ZiS4M%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=5505320121146780364&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video" alt="upload successful"></p>
+<p>字段类型有很多种，而常用的就那几种：</p>
+<p><strong>整数</strong></p>
+<p>1.这里需要注意的一点是<strong>整数型的数值类型已经限制了取值范围，分为有符号和无符号型，而Length（M）值并不代表可以存储的数值长度，它代表的是数据在显示时显示的最小长度</strong></p>
+<p>2.当存储的字符长度超过M值时，没有任何影响，只要不超过数值类型限制范围</p>
+<p>3.当存储的字符长度小于M值时，只要在设置了ZeroFill，才有效果。</p>
+<p>举个栗子：如果你设置int(11)，那么有个字段值是123，那么这个值在显示宽度上是3位，而设计的是显示的是11位，所以这时候，你如果在字段设计的时候，选择zerofill就可以发现，123变成了00000000123，也就是剩下的8位用0补足了。</p>
+<p>所以我们在设计mysql数据库时，建表时，mysql会自动分配长度：int(11)、tinyint(4)、smallint(6)、mediumint(9)、bigint(20)。</p>
+<pre><code>总结：就用这些默认的显示长度就可以了。不用再去自己填长度。
+比如搞个int(10)、tinyint(1)之类的，基本没用。而且导致表的字段类型多样化。</code></pre><p><strong>字符类型</strong></p>
+<p><strong>char(m)为固定长度。</strong></p>
+<p>1.m取值为0～255，当保存char值时，在它们的右边填充空格以达到指定的长度。</p>
+<p>2.当检索到char值时，尾部的空格被删除掉。</p>
+<p>3.在存储或检索过程中不进行大小写转换。</p>
+<p>char字段上的索引效率级高，比如定义char(10)，那么不论你存储的数据是否达到了10个字节，都要占去10个字节的空间,不足的自动用空格填充。</p>
+<p><strong>varchar(m)为可变长度类型。</strong></p>
+<p>1.m取值为0~65535之间，保存时不进行填充。</p>
+<p>2.varchar值保存时只保存需要的字符数，另加一个字节来记录长度（Length+1)。</p>
+<p>3.当值保存和检索时尾部的空格仍保留，符合标准SQL。</p>
+<p>varchar存储变长数据，但存储效率没有char高。如果一个字段可能的值是不固定长度的，我们只知道它不可能超过10个字符，把它定义为varchar(10)是最合算的。 从空间上考虑，用varchar合适；从效率上考虑，用char合适，关键是根据实际情况找到权衡点，所有当需要大量查询需求的时候，用char。当对于保存数据量过大的需求时，为了节省储存空间用varchar。</p>
+<p><strong>text大文本。</strong></p>
+<p>1.最大长度为65,535(2的16次方–1)字符的text列。</p>
+<p>2.主要是用来存放非二进制的文本，如论坛帖子,题目，或者百度知道的问题和回答之类。</p>
+<p>3.text列不能有默认值，存储或检索过程中，不存在大小写转换，后面如果指定长度，不会报错误，但是这个长度是不起作用的，意思就是你插入数据的时候，超过你指定的长度还是可以正常插入。</p>
+<pre><code>总结：
+1.长度的区别，char范围是0～255，varchar最长是64k，如果遇到了大文本，考虑使用text，最大能到4G。
+2.效率来说基本是char&gt;varchar&gt;text。
+3.char和varchar可以有默认值，text不能指定默认值。</code></pre><p><strong>时间类型</strong></p>
+<p>1.<strong>datetime类型</strong> 同时包含日期和时间信息的值时。Mysql检索并且以’YYYY-MM-DD HH:MM:SS’格式显示datetime值，支持的范围是’1000-01-01 00:00:00’到’9999-12-31 23:59:59’。<strong>可表示时间范围大。</strong></p>
+<p>2.<strong>date类型</strong>仅需要日期值时，没有时间部分。MySQL检索并且以’YYYY-MM-DD’格式显示date值，<br>支持的范围是’1000-01-01’到’9999-12-31’。</p>
+<p>3.<strong>timestamp类型</strong> 默认情况下，在 insert, update 数据时，timestamp 列会自动以当前时间（CURRENT_TIMESTAMP）填充/更新。。<strong>所占存储空间小。</strong></p>
+<p>4.<strong>time类型</strong> 表示一天中的时间。MySQL检索并且以”HH:MM:SS”格式显示time值。支持的范围是’00:00:00’到’23:59:59’。</p>
+<p><strong>字段的索引及其设置</strong></p>
+<p>1.<strong>普通索引(index)</strong>：最基本的索引，没有任何限制。</p>
+<p>2.<strong>唯一索引(unique)</strong>：与”普通索引”类似，不同的就是：索引列的值必须唯一，但允许有空值。</p>
+<p>3.<strong>主键索引(primary)</strong>：它是一种特殊的唯一索引，提供唯一性约束，不允许有空值。</p>
+<p>4.<strong>全文索引(fulltext)</strong>：仅可用于 MyISAM 表，用于在一篇文章中，检索文本信息的,针对较大的数据，生成全文索引很耗时耗空间。</p>
+<pre><code>总结对索引的简单理解：如果你给一个唯一性的字段加上索引，比如一个字段是房间号。你不设置字段的情况下去搜索
+RoomNumber=101，那么数据库会去一条一条的搜索数据库中的RoomNumber字段，直到找到101给你返回，但如果你把
+RoomNumber设置为索引，那么数据库就会直接找到RoomNumber=101这条信息给你返回。所以索引的作用是加快数据库搜
+索的效率，但是同样的，你给一个字段设置为索引，是要消耗资源的。</code></pre>
+    </div>
+
+    <div>全文完。</div>
+  </article>
+  <div class="toc-container">
+    
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Posts</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#记录中的常用信息"><span class="toc-text">记录中的常用信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字段类型选择"><span class="toc-text">字段类型选择</span></a></li></ol>
+  </div>
+
+
+  </div>
+</div>
+<div class="copyright">
+    <span>本作品采用</span>
+    <a href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>
+    <span>进行许可。 转载时请注明原文链接。</span>
+</div>
+<div class="share" style="width: 100%;">
+  <img src="https://kevinofneu-blog-static.oss-cn-beijing.aliyuncs.com/static/2018-12-10-qrcode_for_gh_ffacf5722095_258.jpg" alt="Running Geek" style="margin: auto; display: block;"/>
+
+  <div style="margin: auto; text-align: center; font-size: 0.8em; color: grey;">老铁们关注走一走，不迷路</div>
+  
+</div>
+
+  
+    <div class="post-nav">
+      <div class="post-nav-item post-nav-next">
+        
+      </div>
+  
+      <div class="post-nav-item post-nav-prev">
+          
+          <a href="/2019/09/28/hello-world/" rel="prev" title="Hello World">
+            Hello World
+          </a>
+          <span>〉</span>
+        
+      </div>
+    </div>
+  
+
+
+    </div>
+
+    
+
+  </div>
+  <footer class="footer text-center">
+    <div id="bottom-inner">
+        <a class="bottom-item" href="https://landscape.gitee.io">首页</a> |
+        <a class="bottom-item" href="https://gitee.com/landscape" target="_blank">主站</a> |
+        <a class="bottom-item" href="https://gitee.com/landscape" target="_blank">GitHub</a> |
+        <a class="bottom-item" href="https://hexo.io" target="_blank">Powered by hexo</a> |
+    </div>
+</footer>
+  
+
+<script>
+  (function(window, document, undefined) {
+
+    var timer = null;
+
+    function returnTop() {
+      cancelAnimationFrame(timer);
+      timer = requestAnimationFrame(function fn() {
+        var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+        if (oTop > 0) {
+          document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+          timer = requestAnimationFrame(fn);
+        } else {
+          cancelAnimationFrame(timer);
+        }
+      });
+    }
+
+    var hearts = [];
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          setTimeout(callback, 1000 / 60);
+        }
+    })();
+    init();
+
+    function init() {
+      css(".heart{z-index:9999;width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: absolute;}.heart:after{top: -5px;}.heart:before{left: -5px;}");
+      attachEvent();
+      gameloop();
+      addMenuEvent();
+    }
+
+    function gameloop() {
+      for (var i = 0; i < hearts.length; i++) {
+        if (hearts[i].alpha <= 0) {
+          document.body.removeChild(hearts[i].el);
+          hearts.splice(i, 1);
+          continue;
+        }
+        hearts[i].y--;
+        hearts[i].scale += 0.004;
+        hearts[i].alpha -= 0.013;
+        hearts[i].el.style.cssText = "left:" + hearts[i].x + "px;top:" + hearts[i].y + "px;opacity:" + hearts[i].alpha + ";transform:scale(" + hearts[i].scale + "," + hearts[i].scale + ") rotate(45deg);background:" + hearts[i].color;
+      }
+      requestAnimationFrame(gameloop);
+    }
+
+    /**
+     * 给logo设置点击事件
+     * 
+     * - 回到顶部
+     * - 出现爱心
+     */
+    function attachEvent() {
+      var old = typeof window.onclick === "function" && window.onclick;
+      var logo = document.getElementById("logo");
+      if (logo) {
+        logo.onclick = function(event) {
+          returnTop();
+          old && old();
+          createHeart(event);
+        }
+      }
+      
+    }
+
+    function createHeart(event) {
+      var d = document.createElement("div");
+      d.className = "heart";
+      hearts.push({
+        el: d,
+        x: event.clientX - 5,
+        y: event.clientY - 5,
+        scale: 1,
+        alpha: 1,
+        color: randomColor()
+      });
+      document.body.appendChild(d);
+    }
+
+    function css(css) {
+      var style = document.createElement("style");
+      style.type = "text/css";
+      try {
+        style.appendChild(document.createTextNode(css));
+      } catch (ex) {
+        style.styleSheet.cssText = css;
+      }
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
+
+    function randomColor() {
+      // return "rgb(" + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + ")";
+      return "#F44336";
+    }
+
+    function addMenuEvent() {
+      var menu = document.getElementById('menu-main-post');
+      if (menu) {
+        var toc = document.getElementById('toc');
+        if (toc) {
+          menu.onclick = function() {
+            if (toc) {
+              if (toc.style.display == 'block') {
+                toc.style.display = 'none';
+              } else {
+                toc.style.display = 'block';
+              }
+            }
+          };
+        } else {
+          menu.style.display = 'none';
+        }
+      }
+    }
+
+  })(window, document);
+</script>
+
+  
+
+
+
+</body>
+</html>
