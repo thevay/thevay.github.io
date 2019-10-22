@@ -90,40 +90,39 @@
 <p><img src="https://thumbnail0.baidupcs.com/thumbnail/63cdc8d8c9458c61a1905a9188de9a36?fid=4052808493-250528-110980498092951&time=1571731200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-krM9YKOCybIx2Ty2MtOCojmArvg%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=6834808993226205833&dp-callid=0&shfl=s1eHmkZ6mrmc5eMOL3OGcbQw&shfl=sharepset&size=c710_u400&quality=100&vuk=-&ft=video" alt="upload successful"></p>
 <h4 id="字段类型选择"><a href="#字段类型选择" class="headerlink" title="字段类型选择"></a>字段类型选择</h4><p><img src="https://thumbnail0.baidupcs.com/thumbnail/9fafc9f2ebd0c079cae6d75a506e7b53?fid=4052808493-250528-986765735937451&time=1571731200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-2jVJaqZVDJwdiw88%2FKo3V0yIdNk%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=6834817095974970371&dp-callid=0&shfl=s1ZHeLxt4RFLFz1Hb3pQrYLw&shfl=sharepset&size=c710_u400&quality=100&vuk=-&ft=video" alt="upload successful"></p>
 <p>字段类型有很多种，而常用的就那几种：</p>
-<p><strong>整数</strong></p>
-<p>1.这里需要注意的一点是<strong>整数型的数值类型已经限制了取值范围，分为有符号和无符号型，而Length（M）值并不代表可以存储的数值长度，它代表的是数据在显示时显示的最小长度</strong></p>
+<p>整数</p>
+<p>1.这里需要注意的一点是整数型的数值类型已经限制了取值范围，分为有符号和无符号型，而Length（M）值并不代表可以存储的数值长度，它代表的是数据在显示时显示的最小长度</p>
 <p>2.当存储的字符长度超过M值时，没有任何影响，只要不超过数值类型限制范围</p>
 <p>3.当存储的字符长度小于M值时，只要在设置了ZeroFill，才有效果。</p>
 <p>举个栗子：如果你设置int(11)，那么有个字段值是123，那么这个值在显示宽度上是3位，而设计的是显示的是11位，所以这时候，你如果在字段设计的时候，选择zerofill就可以发现，123变成了00000000123，也就是剩下的8位用0补足了。</p>
 <p>所以我们在设计mysql数据库时，建表时，mysql会自动分配长度：int(11)、tinyint(4)、smallint(6)、mediumint(9)、bigint(20)。</p>
-<pre><code>总结：就用这些默认的显示长度就可以了。不用再去自己填长度。
-比如搞个int(10)、tinyint(1)之类的，基本没用。而且导致表的字段类型多样化。</code></pre><p><strong>字符类型</strong></p>
-<p><strong>char(m)为固定长度。</strong></p>
+<pre><code>总结：就用这些默认的显示长度就可以了。不用再去自己填长度。比如搞个int(10)、tinyint(1)之类的，基本没用。而且导致表的字段类型多样化。</code></pre><p>字符类型</p>
+<p>char(m)为固定长度</p>
 <p>1.m取值为0～255，当保存char值时，在它们的右边填充空格以达到指定的长度。</p>
 <p>2.当检索到char值时，尾部的空格被删除掉。</p>
 <p>3.在存储或检索过程中不进行大小写转换。</p>
 <p>char字段上的索引效率级高，比如定义char(10)，那么不论你存储的数据是否达到了10个字节，都要占去10个字节的空间,不足的自动用空格填充。</p>
-<p><strong>varchar(m)为可变长度类型。</strong></p>
+<p>varchar(m)为可变长度类型</p>
 <p>1.m取值为0~65535之间，保存时不进行填充。</p>
 <p>2.varchar值保存时只保存需要的字符数，另加一个字节来记录长度（Length+1)。</p>
 <p>3.当值保存和检索时尾部的空格仍保留，符合标准SQL。</p>
 <p>varchar存储变长数据，但存储效率没有char高。如果一个字段可能的值是不固定长度的，我们只知道它不可能超过10个字符，把它定义为varchar(10)是最合算的。 从空间上考虑，用varchar合适；从效率上考虑，用char合适，关键是根据实际情况找到权衡点，所有当需要大量查询需求的时候，用char。当对于保存数据量过大的需求时，为了节省储存空间用varchar。</p>
-<p><strong>text大文本。</strong></p>
+<p>TEXT大文本</p>
 <p>1.最大长度为65,535(2的16次方–1)字符的text列。</p>
 <p>2.主要是用来存放非二进制的文本，如论坛帖子,题目，或者百度知道的问题和回答之类。</p>
 <p>3.text列不能有默认值，存储或检索过程中，不存在大小写转换，后面如果指定长度，不会报错误，但是这个长度是不起作用的，意思就是你插入数据的时候，超过你指定的长度还是可以正常插入。</p>
 <pre><code>总结：
 1.长度的区别，char范围是0～255，varchar最长是64k，如果遇到了大文本，考虑使用text，最大能到4G。
 2.效率来说基本是char&gt;varchar&gt;text。
-3.char和varchar可以有默认值，text不能指定默认值。</code></pre><p><strong>时间类型</strong></p>
-<p>1.<strong>datetime类型</strong> 同时包含日期和时间信息的值时。Mysql检索并且以’YYYY-MM-DD HH:MM:SS’格式显示datetime值，支持的范围是’1000-01-01 00:00:00’到’9999-12-31 23:59:59’。<strong>可表示时间范围大。</strong></p>
-<p>2.<strong>date类型</strong>仅需要日期值时，没有时间部分。MySQL检索并且以’YYYY-MM-DD’格式显示date值，<br>支持的范围是’1000-01-01’到’9999-12-31’。</p>
-<p>3.<strong>timestamp类型</strong> 默认情况下，在 insert, update 数据时，timestamp 列会自动以当前时间（CURRENT_TIMESTAMP）填充/更新。。<strong>所占存储空间小。</strong></p>
-<p>4.<strong>time类型</strong> 表示一天中的时间。MySQL检索并且以”HH:MM:SS”格式显示time值。支持的范围是’00:00:00’到’23:59:59’。</p>
-<h4 id="字段的索引及其设置"><a href="#字段的索引及其设置" class="headerlink" title="字段的索引及其设置"></a>字段的索引及其设置</h4><p>1.<strong>普通索引(index)</strong>：最基本的索引，没有任何限制。</p>
-<p>2.<strong>唯一索引(unique)</strong>：与”普通索引”类似，不同的就是：索引列的值必须唯一，但允许有空值。</p>
-<p>3.<strong>主键索引(primary)</strong>：它是一种特殊的唯一索引，提供唯一性约束，不允许有空值。</p>
-<p>4.<strong>全文索引(fulltext)</strong>：仅可用于 MyISAM 表，用于在一篇文章中，检索文本信息的,针对较大的数据，生成全文索引很耗时耗空间。</p>
+3.char和varchar可以有默认值，text不能指定默认值。</code></pre><p>时间类型</p>
+<p>1.datetime类型 同时包含日期和时间信息的值时。Mysql检索并且以’YYYY-MM-DD HH:MM:SS’格式显示datetime值，支持的范围是’1000-01-01 00:00:00’到’9999-12-31 23:59:59’。可表示时间范围大。</p>
+<p>2.date类型 仅需要日期值时，没有时间部分。MySQL检索并且以’YYYY-MM-DD’格式显示date值，<br>支持的范围是’1000-01-01’到’9999-12-31’。</p>
+<p>3.timestamp类型 默认情况下，在 insert, update 数据时，timestamp 列会自动以当前时间（CURRENT_TIMESTAMP）填充/更新,所占存储空间小。</p>
+<p>4.time类型 表示一天中的时间。MySQL检索并且以”HH:MM:SS”格式显示time值。支持的范围是’00:00:00’到’23:59:59’。</p>
+<h4 id="字段的索引及其设置"><a href="#字段的索引及其设置" class="headerlink" title="字段的索引及其设置"></a>字段的索引及其设置</h4><p>1.普通索引(index)：最基本的索引，没有任何限制。</p>
+<p>2.唯一索引(unique)：与”普通索引”类似，不同的就是：索引列的值必须唯一，但允许有空值。</p>
+<p>3.主键索引(primary)：它是一种特殊的唯一索引，提供唯一性约束，不允许有空值。</p>
+<p>4.全文索引(fulltext)：仅可用于 MyISAM 表，用于在一篇文章中，检索文本信息的,针对较大的数据，生成全文索引很耗时耗空间。</p>
 <pre><code>总结对索引的简单理解：如果你给一个唯一性的字段加上索引，比如一个字段是房间号。你不设置字段的情况下去搜索
 RoomNumber=101，那么数据库会去一条一条的搜索数据库中的RoomNumber字段，直到找到101给你返回，但如果你把
 RoomNumber设置为索引，那么数据库就会直接找到RoomNumber=101这条信息给你返回。所以索引的作用是加快数据库搜
@@ -179,7 +178,7 @@ RoomNumber设置为索引，那么数据库就会直接找到RoomNumber=101这�
   </div>
   <footer class="footer text-center">
     <div id="bottom-inner">
-        <a class="bottom-item" href="https://landscape.gitee.io">首页</a> |
+        <a class="bottom-item" href="https://thevay.github.io/">首页</a> |
         <a class="bottom-item" href="https://gitee.com/landscape" target="_blank">主站</a> |
         <a class="bottom-item" href="https://gitee.com/landscape" target="_blank">GitHub</a>
     </div>

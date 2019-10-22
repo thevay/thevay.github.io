@@ -41,6 +41,7 @@ h4,
 h5,
 h6 {
   font-size: 1rem;
+  font-weight: 600px;
 }
 h1,
 h2,
@@ -49,8 +50,8 @@ h4,
 h5,
 h6 {
   margin: 0.5rem 0;
-  line-height: 1.5rem;
-  font-weight: 500;
+  line-height: 1rem;
+  font-weight: 600;
 }
 b,
 optgroup,
@@ -255,7 +256,7 @@ body {
   vertical-align: middle;
   font-family: '微软雅黑', sans-serif;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 40px;
 }
 .nav-container .home-menu .pure-menu-list {
@@ -341,7 +342,7 @@ body {
   font-size: 12px;
 }
 .recent-posts .recent-post-item .title h2 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: normal;
 }
 @media screen and (max-width: 576px) {
@@ -841,7 +842,7 @@ body {
 }
 .archives .archive .date {
   color: #999;
-  font-family: 'Montserrat', sans-serif;
+  font-family: '微软雅黑', sans-serif;
   text-transform: uppercase;
   font-size: 1.0rem;
   font-weight: 300;
