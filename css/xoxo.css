@@ -32,15 +32,15 @@ h1 {
   font-size: 1.5rem;
 }
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
 }
 h3 {
-  font-size: 1.25rem;
+  font-size: 1rem;
 }
 h4,
 h5,
 h6 {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600px;
 }
 h1,
@@ -178,9 +178,10 @@ footer .bottom-item:hover {
   }
 }
 html,
+/*可修改*/
 body {
-  font-size: 16px;
-  font-weight: 300;
+  font-size: 14px;
+  font-weight: 400;
 }
 body {
   color: #202020;
@@ -254,7 +255,7 @@ body {
   margin-left: 10px;
   display: inline-block;
   vertical-align: middle;
-  font-family: '微软雅黑', sans-serif;
+  font-family: '微软雅黑',"Helvetica Neue", "Helvetica", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans CN", "WenQuanYi Micro Hei", Arial, sans-serif;
   font-weight: 700;
   font-size: 16px;
   line-height: 40px;
@@ -842,7 +843,7 @@ body {
 }
 .archives .archive .date {
   color: #999;
-  font-family: '微软雅黑', sans-serif;
+  font-family: '微软雅黑', "Helvetica Neue", "Helvetica", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans CN", "WenQuanYi Micro Hei", Arial, sans-serif;
   text-transform: uppercase;
   font-size: 1.0rem;
   font-weight: 300;
@@ -865,7 +866,7 @@ body {
 pre,
 code {
   background-color: #f6f6f6;
-  font-family: "Source Code Pro", "courier new", "Input Mono", "PT Mono", Consolas, Monaco, Menlo, monospace;
+  font-family: "Helvetica Neue", "Helvetica", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans CN", "WenQuanYi Micro Hei", Arial, sans-serif;
 }
 pre {
   padding: 10px;
@@ -873,9 +874,11 @@ pre {
 pre code {
   padding: 10px;
 }
+/*可修改*/
 code {
   padding: 2px 4px;
-  font-size: 0.8rem;
+  font-size: 13px;
+  font-weight: 300;
 }
 .highlight {
   display: block;
