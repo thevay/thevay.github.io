@@ -180,7 +180,7 @@ footer .bottom-item:hover {
 html,
 /*可修改*/
 body {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
 }
 body {
@@ -877,7 +877,7 @@ pre code {
 /*可修改*/
 code {
   padding: 2px 4px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 300;
 }
 .highlight {
