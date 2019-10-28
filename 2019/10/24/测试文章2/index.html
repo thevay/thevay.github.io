@@ -92,7 +92,26 @@
     </header>
 
     <div class="post-content">
-      
+      <p><span class="github-emoji" style="color: transparent;background:no-repeat url(https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8) center/contain" data-src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8">😄</span></p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>
     </div>
 
     <div>全文完。</div>
@@ -100,8 +119,35 @@
   <div class="toc-container">
     
 
+
   </div>
+
 </div>
+<section id="comments">
+      <div id="valine_thread" style="margin: 30px;"></div>
+            <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+            <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+            <script>
+                var GUEST_INFO = ['nick','mail','link'];
+                var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+                    return GUEST_INFO.indexOf(item) > -1
+                });
+                var notify = 'false' == true;
+                var verify = 'false' == true;
+                var valine = new Valine();
+                valine.init({
+                    el: '#valine_thread',
+                    notify: notify,
+                    verify: verify,
+                    appId: "c5nACLtjaK7VBhs0HF1sWYdI-gzGzoHsz",
+                    appKey: "Ch0YJ5jvWmsTlOTruXAilVcr",
+                    placeholder: "Just go go",
+                    pageSize:'10',
+                    avatar:'mm',
+                    lang:'zh-cn'
+                })
+            </script>
+    </section>
 <div class="copyright">
     <span>本作品采用</span>
     <a href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>
@@ -127,6 +173,11 @@
   
       <div class="post-nav-item post-nav-prev">
           
+          <a href="/2019/10/28/测试文章3/" rel="prev" title="测试文章3">
+            测试文章3
+          </a>
+          <span>〉</span>
+        
       </div>
     </div>
   
@@ -136,8 +187,9 @@
     </div>
 
     
-
+    
   </div>
+  
   <footer class="footer text-center">
     <div id="bottom-inner">
         <a class="bottom-item" href="https://thevay.github.io/">首页</a> |
