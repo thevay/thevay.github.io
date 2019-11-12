@@ -1,0 +1,382 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#202020">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+  
+  
+    <meta name="keywords" content="设计模式,">
+  
+
+  
+    <meta name="description" content="记录有趣生活">
+  
+  
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <title>一文道尽设计模式 [ thevay ]</title>
+  
+    <!-- stylesheets list from config.yml -->
+    
+      <link rel="stylesheet" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css">
+    
+      <link rel="stylesheet" href="/css/xoxo.css">
+    
+  
+</head>
+
+
+<body>
+  <div class="nav-container">
+    <nav class="home-menu pure-menu pure-menu-horizontal">
+  <a class="pure-menu-heading" href="/">
+    <img class="avatar" src="http://thevay.github.io/images/logo.png">
+    <span class="title">thevay</span>
+  </a>
+
+  <ul class="pure-menu-list clearfix">
+      
+          
+            <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/archives" class="pure-menu-link">归档</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/tags" class="pure-menu-link">标签</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/search" class="pure-menu-link">搜索</a></li>
+          
+      
+  </ul>
+   
+</nav>
+  </div>
+
+  <div class="container" id="content-outer">
+    <div class="inner" id="content-inner">
+      <div class="post-container">
+  <article class="post" id="post">
+    <header class="post-header text-center">
+      <h1 class="title">
+        一文道尽设计模式
+      </h1>
+      <span>
+        
+        <time class="time" datetime="2019-11-12T12:46:00.000Z">
+        2019-11-12
+      </time>
+        
+      </span>
+      <span class="slash">/</span>
+      <span class="post-meta">
+      <span class="post-tags">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+      </span>
+    </span>
+      <span class="slash">/</span>
+      <span class="read">
+      <span id="busuanzi_value_page_pv"></span> 点击
+    </span>
+      <span class="slash">/</span>
+      <span class="read">阅读耗时 3分</span>
+    </header>
+
+    <div class="post-content">
+      <h3 id="学习设计模式从忘记模式开始"><a href="#学习设计模式从忘记模式开始" class="headerlink" title="学习设计模式从忘记模式开始"></a>学习设计模式从忘记模式开始</h3><p>简单讲，设计模式就是一些技术大师总结的一套写代码套路，不想回农村，就要套路深。</p>
+<p>设计模式分为三类：创建型、结构型、行为型</p>
+<ul>
+<li>创建型：创建对象使用</li>
+<li>结构型：组织不同的小对象，形成更复杂结构的大对象</li>
+<li>行为型：协调不同对象的运行流程<a id="more"></a>
+
+</li>
+</ul>
+<p>使用设计模式的必要性？</p>
+<p>面向对象的七大原则是评价一个设计模式好坏的标准。<br>1.开闭原则<br>2.里氏替换原则<br>3.依赖倒置原则<br>4.单一职责原则<br>5.接口隔离原则<br>6.迪米特原则<br>7.组合聚合复用原则</p>
+<p>特别有节操的说明一点：设计模式不能强上<span class="github-emoji" style="color: transparent;background:no-repeat url(https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8) center/contain" data-src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8">😄</span>!</p>
+<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>简单理解：数据创建型，控制创建对象数量，一次只能创建一个实例</p>
+<p>必要性：特定场景下，若不适用单例，会导致同一时刻状态不同步；有利于节约系统资源；全局数据共享等</p>
+<p>分类：</p>
+<p>1.饿汉式单例:类一初始化，该类的对象就立刻会被实例化.</p>
+<p>简单实现：<br>    - private 修饰构造方法<br>    - static 修饰 instance，类加载阶段创建对象，利用只能被加载一次特点保证单例</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HungrySingleton</span> </span>{</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">HungrySingleton</span><span class="params">()</span> </span>{} ❶</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> HungrySingleton instance = <span class="keyword">new</span> HungrySingleton();❷</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> HungrySingleton <span class="title">getInstance</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>问题：如果创建对象耗时耗资源，会造成性能损耗</p>
+<p>2.懒汉式单例:类一初始化，该类的对象就立刻会被实例化</p>
+<p>简单实现：<br>    - 类变量初始null，类加载不会立刻创建对象<br>    - 私有化构造方法<br>    - 判断是否已创建了对象，有创建不再创建，没有再创建，实现了延迟加载也保证了单例</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LazySingleton</span> </span>{</span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="title">LazySingleton</span><span class="params">()</span> </span>{}</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> LazySingleton instance = <span class="keyword">null</span>;	❶</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LazySingleton <span class="title">getInstance</span><span class="params">()</span> </span>{	❷</span><br><span class="line">    <span class="keyword">if</span>(instance == <span class="keyword">null</span>){ ❸</span><br><span class="line">      instance = <span class="keyword">new</span> LazySingleton();</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>问题：多线程下，单例会被破坏</p>
+<p>2-1.使用加锁的方式避免多线程下，单例结构被破坏</p>
+<p>简单实现：<br>    - volatile 保证多线程下的内存可见性<br>    - synchronized 同步锁保证同一时刻只有一个线程进入getInstance()方法</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LazySingleton</span> </span>{</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">LazySingleton</span><span class="params">()</span> </span>{}</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> LazySingleton instance = <span class="keyword">null</span>;	❶</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> LazySingleton <span class="title">getInstance</span><span class="params">()</span> </span>{ ❷</span><br><span class="line">    <span class="keyword">if</span>(instance == <span class="keyword">null</span>){</span><br><span class="line">      instance = <span class="keyword">new</span> LazySingleton();</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>问题：同步锁会导致线程阻塞，性能下降</p>
+<p>2-2.修改为双重检测锁</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LazySingleton</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">LazySingleton</span><span class="params">()</span> </span>{}	 </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> LazySingleton instance = <span class="keyword">null</span>; ❷</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LazySingleton <span class="title">getInstance</span><span class="params">()</span></span>{ ❶</span><br><span class="line">      <span class="keyword">if</span>(instance == <span class="keyword">null</span>){ ❸	</span><br><span class="line">        <span class="keyword">synchronized</span> (LazySingleton.class) { ❺</span><br><span class="line">          <span class="keyword">if</span>(instance == <span class="keyword">null</span>)	❹</span><br><span class="line">          instance = <span class="keyword">new</span> LazySingleton();❻</span><br><span class="line">        }</span><br><span class="line">      }</span><br><span class="line">      <span class="keyword">return</span> instance;</span><br><span class="line">    }</span><br><span class="line">  }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>3.静态内部类实现单例</p>
+<blockquote>
+<p>根据类加载机制，外部类的初始化不会导致静态内部类的初始化</p>
+</blockquote>
+<p>简单实现：<br>    - 静态内部类创建实例，实现延迟加载<br>    - StaticInnerSingletonInstance.instance对instance引用创建对象一次，<br>      由于static 修饰只会在类接在初始化一次，天然保证线程安全。比几种方式优。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StaticInnerSingleton</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">StaticInnerSingleton</span><span class="params">()</span> </span>{}</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">StaticInnerSingletonInstance</span> </span>{ ❶</span><br><span class="line">      <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> StaticInnerSingleton instance = <span class="keyword">new</span> StaticInnerSingleton();</span><br><span class="line">    }</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StaticInnerSingleton <span class="title">getInstance</span><span class="params">()</span> </span>{ ❷</span><br><span class="line">      <span class="keyword">return</span> StaticInnerSingletonInstance.instance;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>4.枚举实现</p>
+<blockquote>
+<p>Java中的枚举类型本身就天然单例</p>
+</blockquote>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> EnumSingletonInstance{</span><br><span class="line">   INSTANCE;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> EnumSingletonInstance <span class="title">getInstance</span><span class="params">()</span></span>{</span><br><span class="line">   		<span class="keyword">return</span> INSTANCE;</span><br><span class="line">   }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>问题：无法延迟加载，枚举类加载自然初始化实例</p>
+<p>5.破解？！单例</p>
+<p>简单实现方式：反射、反序列化</p>
+<p>全文 Best Ref: <a href="https://mp.weixin.qq.com/s/wb_INuq8cQ0p8hGtIYf0uQ" target="_blank" rel="noopener">From</a></p>
+<p>未完待续..</p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>
+    </div>
+
+    <div>全文完。</div>
+  </article>
+  <div class="toc-container">
+    
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#学习设计模式从忘记模式开始"><span class="toc-text">学习设计模式从忘记模式开始</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#单例模式"><span class="toc-text">单例模式</span></a></li></ol>
+  </div>
+
+
+
+  </div>
+
+</div>
+<section id="comments">
+      <div id="valine_thread" style="margin: 30px;"></div>
+            <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+            <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+            <script>
+                var GUEST_INFO = ['nick','mail','link'];
+                var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+                    return GUEST_INFO.indexOf(item) > -1
+                });
+                var notify = 'false' == true;
+                var verify = 'false' == true;
+                var valine = new Valine();
+                valine.init({
+                    el: '#valine_thread',
+                    notify: notify,
+                    verify: verify,
+                    appId: "c5nACLtjaK7VBhs0HF1sWYdI-gzGzoHsz",
+                    appKey: "Ch0YJ5jvWmsTlOTruXAilVcr",
+                    placeholder: "Just go go",
+                    pageSize:'10',
+                    avatar:'mm',
+                    lang:'zh-cn'
+                })
+            </script>
+    </section>
+<div class="copyright">
+    <span>本作品采用</span>
+    <a href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>
+    <span>进行许可。 转载时请注明原文链接。</span>
+</div>
+<div class="share" style="width: 100%;">
+  <img src="http://pztbc1npk.bkt.clouddn.com/wechat_code.jpg" alt="IamCoder" style="margin: auto; display: block;"/>
+
+  <div style="margin: auto; text-align: center; font-size: 0.8em; color: grey;">老铁们关注走一走，不迷路</div>
+  
+</div>
+
+  
+    <div class="post-nav">
+      <div class="post-nav-item post-nav-next">
+        
+          <span>〈 </span>
+          <a href="/2019/10/28/测试文章3/" rel="next" title="测试文章3">
+          测试文章3
+          </a>
+        
+      </div>
+  
+      <div class="post-nav-item post-nav-prev">
+          
+      </div>
+    </div>
+  
+
+</script>
+
+    </div>
+
+    
+    
+  </div>
+  
+  <footer class="footer text-center">
+    <div id="bottom-inner">
+        <a class="bottom-item" href="https://thevay.github.io/">首页</a> |
+        <a class="bottom-item" href="https://thevay.github.io/" target="_blank">主站</a> |
+        <a class="bottom-item" href="https://github.com/thevay" target="_blank">GitHub</a>
+    </div>
+</footer>
+  
+
+<script>
+  (function(window, document, undefined) {
+
+    var timer = null;
+
+    function returnTop() {
+      cancelAnimationFrame(timer);
+      timer = requestAnimationFrame(function fn() {
+        var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+        if (oTop > 0) {
+          document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+          timer = requestAnimationFrame(fn);
+        } else {
+          cancelAnimationFrame(timer);
+        }
+      });
+    }
+
+    var hearts = [];
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          setTimeout(callback, 1000 / 60);
+        }
+    })();
+    init();
+
+    function init() {
+      css(".heart{z-index:9999;width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: absolute;}.heart:after{top: -5px;}.heart:before{left: -5px;}");
+      attachEvent();
+      gameloop();
+      addMenuEvent();
+    }
+
+    function gameloop() {
+      for (var i = 0; i < hearts.length; i++) {
+        if (hearts[i].alpha <= 0) {
+          document.body.removeChild(hearts[i].el);
+          hearts.splice(i, 1);
+          continue;
+        }
+        hearts[i].y--;
+        hearts[i].scale += 0.004;
+        hearts[i].alpha -= 0.013;
+        hearts[i].el.style.cssText = "left:" + hearts[i].x + "px;top:" + hearts[i].y + "px;opacity:" + hearts[i].alpha + ";transform:scale(" + hearts[i].scale + "," + hearts[i].scale + ") rotate(45deg);background:" + hearts[i].color;
+      }
+      requestAnimationFrame(gameloop);
+    }
+
+    /**
+     * 给logo设置点击事件
+     * 
+     * - 回到顶部
+     * - 出现爱心
+     */
+    function attachEvent() {
+      var old = typeof window.onclick === "function" && window.onclick;
+      var logo = document.getElementById("logo");
+      if (logo) {
+        logo.onclick = function(event) {
+          returnTop();
+          old && old();
+          createHeart(event);
+        }
+      }
+      
+    }
+
+    function createHeart(event) {
+      var d = document.createElement("div");
+      d.className = "heart";
+      hearts.push({
+        el: d,
+        x: event.clientX - 5,
+        y: event.clientY - 5,
+        scale: 1,
+        alpha: 1,
+        color: randomColor()
+      });
+      document.body.appendChild(d);
+    }
+
+    function css(css) {
+      var style = document.createElement("style");
+      style.type = "text/css";
+      try {
+        style.appendChild(document.createTextNode(css));
+      } catch (ex) {
+        style.styleSheet.cssText = css;
+      }
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
+
+    function randomColor() {
+      // return "rgb(" + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + ")";
+      return "#F44336";
+    }
+
+    function addMenuEvent() {
+      var menu = document.getElementById('menu-main-post');
+      if (menu) {
+        var toc = document.getElementById('toc');
+        if (toc) {
+          menu.onclick = function() {
+            if (toc) {
+              if (toc.style.display == 'block') {
+                toc.style.display = 'none';
+              } else {
+                toc.style.display = 'block';
+              }
+            }
+          };
+        } else {
+          menu.style.display = 'none';
+        }
+      }
+    }
+
+  })(window, document);
+</script>
+
+  
+
+
+
+</body>
+</html>
