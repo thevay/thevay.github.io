@@ -198,7 +198,7 @@
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DoubleDemo1</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> a + b;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
 <blockquote>
-<p>代码膨胀是稍微有点规模的项目都会遇到的问题，在《人月神话》中也有提及。有规模的工程项目都是团队的产物，既然是团队的产物，<br>那么不可能不存在重复的代码，而这种重复的代码随着团队人员的增多，代码规模的增加会更加的突出。这是一个必然存在的问题，不<br>管是你的团队成员多么的优秀，规模的工程项目必然会存在，只不过是优秀的团队使得这种重复和混乱的增长速度变得小了而已。</p>
+<p><strong>代码膨胀</strong>是稍微有点规模的项目都会遇到的问题，在《人月神话》中也有提及。有规模的工程项目都是团队的产<br>物，既然是团队的产物，那么不可能不存在重复的代码，而这种重复的代码随着团队人员的增多，代码规模的增<br>加会更加的突出。这是一个必然存在的问题，不管是你的团队成员多么的优秀，规模的工程项目必然会存在，只<br>不过是优秀的团队使得这种重复和混乱的增长速度变得小了而已。</p>
 </blockquote>
 <h3 id="16-工具类应该屏蔽构造函数"><a href="#16-工具类应该屏蔽构造函数" class="headerlink" title="16. 工具类应该屏蔽构造函数"></a>16. 工具类应该屏蔽构造函数</h3><p>工具类是一堆静态字段和函数的集合，不应该被实例化。但是，Java 为每个没有明确定义构造函数的类添加了一个隐式公有构造函数。<br>所以，为了避免 java “小白”使用有误，应该显式定义私有构造函数来屏蔽这个隐式公有构造函数。</p>
 <p>反例：</p>
@@ -306,8 +306,8 @@
       <div class="post-nav-item post-nav-next">
         
           <span>〈 </span>
-          <a href="/2019/11/13/服务调用幂等性实践/" rel="next" title="服务调用幂等性实践">
-          服务调用幂等性实践
+          <a href="/2019/11/13/WEB架构演进之路/" rel="next" title="WEB架构演进之路">
+          WEB架构演进之路
           </a>
         
       </div>
