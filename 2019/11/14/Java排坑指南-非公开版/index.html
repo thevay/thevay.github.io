@@ -88,7 +88,7 @@
       <span id="busuanzi_value_page_pv"></span> 点击
     </span>
       <span class="slash">/</span>
-      <span class="read">阅读耗时 5分</span>
+      <span class="read">阅读耗时 6分</span>
     </header>
 
     <div class="post-content">
@@ -141,14 +141,13 @@
 <p>正例：</p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"a.ab.abc"</span>.split(<span class="string">"\\."</span>); <span class="comment">// 结果为["a", "ab", "abc"]</span></span><br><span class="line"><span class="string">"a|ab|abc"</span>.split(<span class="string">"\\|"</span>); <span class="comment">// 结果为["a", "ab", "abc"]</span></span><br></pre></td></tr></tbody></table></figure>
 
-<p>Best Ref: <a href="https://mp.weixin.qq.com/s/1aAwroGRSGWrzgE6XpPx7Q" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/1aAwroGRSGWrzgE6XpPx7Q</a></p>
 <h3 id="7-Tip-Java-9改进了String、StringBuffer、StringBuilder"><a href="#7-Tip-Java-9改进了String、StringBuffer、StringBuilder" class="headerlink" title="7. [Tip] Java 9改进了String、StringBuffer、StringBuilder"></a>7. [Tip] Java 9改进了String、StringBuffer、StringBuilder</h3><p>Java 提供String、StringBuffer、StingBuilder 封装字符串</p>
 <p>String类是不可变类，String对象被创建后，包含在这个对象的字符序列不可改变</p>
 <p>StringBuffer 对象代表一个字符序列可变的字符串，创建后通过append()、insert()等方法改变字符序列，最后调用<br>toString() 方法转换为String对象</p>
 <p>StringBuilder也代表可变字符串对象，与StringBuffer区别在于StringBuffer线程安全，StringBuilder没有实现<br>线程安全，所以性能略高。</p>
 <p>Java 9 改进了字符串的实现，之前使用char[] 保存字符，Java 9 改用Byte[]<strong>更加节省空间</strong>。</p>
 <blockquote>
-<p>字符串拼接原理：运行时， 两个字符串str1, str2的拼接首先会调用 String.valueOf(obj)，这个Obj为str1，而<br>String.valueOf(Obj)中的实现是return obj == null ? “null” : obj.toString(), 然后产生StringBuilder，<br>调用的StringBuilder(str1)构造方法， 把StringBuilder初始化，长度为str1.length()+16，并且调用append(str1)！<br>接下来调用StringBuilder.append(str2), 把第二个字符串拼接进去， 然后调用StringBuilder.toString返回结果！</p>
+<p>字符串拼接原理：运行时,两个字符串str1,str2的拼接首先会调用 String.valueOf(obj),这个Obj为str1,而<br>String.valueOf(Obj)中的实现是return obj == null ? “null” : obj.toString(), 然后产生StringBuilder,调<br>用的StringBuilder(str1)构造方法,把StringBuilder初始化,长度为str1.length()+16,并且调用append(str1)！接<br>下来调用StringBuilder.append(str2)，把第二个字符串拼接进去,然后调用StringBuilder.toString返回结果！</p>
 </blockquote>
 <h3 id="8-需要-Map-的主键和取值时，应该迭代-entrySet"><a href="#8-需要-Map-的主键和取值时，应该迭代-entrySet" class="headerlink" title="8. 需要 Map 的主键和取值时，应该迭代 entrySet()"></a>8. 需要 Map 的主键和取值时，应该迭代 entrySet()</h3><p>当循环中只需要 Map 的主键时，迭代 keySet() 是正确的。<br>但是，当需要主键和取值时，迭代 entrySet() 才是更高效的做法，比先迭代 keySet() 后再去 get 取值性能更佳。</p>
 <p>反例：</p>
@@ -157,6 +156,14 @@
 <p>正例：</p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, String&gt; map = ...;</span><br><span class="line"><span class="keyword">for</span> (Map.Entry&lt;String, String&gt; entry : map.entrySet()) {</span><br><span class="line">    String key = entry.getKey();</span><br><span class="line">    String value = entry.getValue();</span><br><span class="line">    ...</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
+<h3 id="9-集合初始化尽量指定大小"><a href="#9-集合初始化尽量指定大小" class="headerlink" title="9. 集合初始化尽量指定大小"></a>9. 集合初始化尽量指定大小</h3><p>java 的集合类用起来十分方便，但是看源码可知，集合也是有大小限制的。<br>每次扩容的时间复杂度很有可能是 O(n) ，所以尽量指定可预知的集合大小，能减少集合的扩容次数。</p>
+<p>反例：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[] arr = <span class="keyword">new</span> <span class="keyword">int</span>[]{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>};</span><br><span class="line">List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i : arr) {</span><br><span class="line">    list.add(i);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>正例：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[] arr = <span class="keyword">new</span> <span class="keyword">int</span>[]{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>};</span><br><span class="line">List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;(arr.length);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i : arr) {</span><br><span class="line">    list.add(i);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Best Ref: <a href="https://mp.weixin.qq.com/s/1aAwroGRSGWrzgE6XpPx7Q" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/1aAwroGRSGWrzgE6XpPx7Q</a></p>
 <script>
         document.querySelectorAll('.github-emoji')
           .forEach(el => {
@@ -184,7 +191,7 @@
     
   <div id="toc" class="toc-article">
     <strong class="toc-title">目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-尽量使用Collection-isEmpty-检测空"><span class="toc-text">1. 尽量使用Collection.isEmpty()检测空</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-集合初始化尽量指定大小"><span class="toc-text">2. 集合初始化尽量指定大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Tip-可以使用ONDUPLICATE-KEY-UPDATE-和唯一索引实现SQL批量插入更新操作"><span class="toc-text">3. [Tip]可以使用ONDUPLICATE KEY UPDATE 和唯一索引实现SQL批量插入更新操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-不要把集合对象传给自己"><span class="toc-text">3. 不要把集合对象传给自己</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-字符串拼接使用-StringBuilder"><span class="toc-text">4. 字符串拼接使用 StringBuilder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-枚举的属性字段必须是私有不可变"><span class="toc-text">5. 枚举的属性字段必须是私有不可变</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-小心String-split-String-regex"><span class="toc-text">6. 小心String.split(String regex)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Tip-Java-9改进了String、StringBuffer、StringBuilder"><span class="toc-text">7. [Tip] Java 9改进了String、StringBuffer、StringBuilder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-需要-Map-的主键和取值时，应该迭代-entrySet"><span class="toc-text">8. 需要 Map 的主键和取值时，应该迭代 entrySet()</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-尽量使用Collection-isEmpty-检测空"><span class="toc-text">1. 尽量使用Collection.isEmpty()检测空</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-集合初始化尽量指定大小"><span class="toc-text">2. 集合初始化尽量指定大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Tip-可以使用ONDUPLICATE-KEY-UPDATE-和唯一索引实现SQL批量插入更新操作"><span class="toc-text">3. [Tip]可以使用ONDUPLICATE KEY UPDATE 和唯一索引实现SQL批量插入更新操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-不要把集合对象传给自己"><span class="toc-text">3. 不要把集合对象传给自己</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-字符串拼接使用-StringBuilder"><span class="toc-text">4. 字符串拼接使用 StringBuilder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-枚举的属性字段必须是私有不可变"><span class="toc-text">5. 枚举的属性字段必须是私有不可变</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-小心String-split-String-regex"><span class="toc-text">6. 小心String.split(String regex)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Tip-Java-9改进了String、StringBuffer、StringBuilder"><span class="toc-text">7. [Tip] Java 9改进了String、StringBuffer、StringBuilder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-需要-Map-的主键和取值时，应该迭代-entrySet"><span class="toc-text">8. 需要 Map 的主键和取值时，应该迭代 entrySet()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-集合初始化尽量指定大小"><span class="toc-text">9. 集合初始化尽量指定大小</span></a></li></ol>
   </div>
 
 
@@ -234,8 +241,8 @@
       <div class="post-nav-item post-nav-next">
         
           <span>〈 </span>
-          <a href="/2019/11/13/服务调用幂等性实践/" rel="next" title="服务调用幂等性实践">
-          服务调用幂等性实践
+          <a href="/2019/11/13/WEB架构演进之路/" rel="next" title="WEB架构演进之路">
+          WEB架构演进之路
           </a>
         
       </div>
