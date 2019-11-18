@@ -11,7 +11,7 @@
   <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
   
   
-    <meta name="keywords" content="幂等性,">
+    <meta name="keywords" content="架构,">
   
 
   
@@ -19,7 +19,7 @@
   
   
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <title>服务调用幂等性实践 [ thevay ]</title>
+  <title>聊一聊微服务与分布式 [ thevay ]</title>
   
     <!-- stylesheets list from config.yml -->
     
@@ -69,19 +69,19 @@
   <article class="post" id="post">
     <header class="post-header text-center">
       <h1 class="title">
-        服务调用幂等性实践
+        聊一聊微服务与分布式
       </h1>
       <span>
         
-        <time class="time" datetime="2019-11-13T02:56:16.000Z">
-        2019-11-13
+        <time class="time" datetime="2019-11-18T06:21:33.000Z">
+        2019-11-18
       </time>
         
       </span>
       <span class="slash">/</span>
       <span class="post-meta">
       <span class="post-tags">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/幂等性/">幂等性</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
       </span>
     </span>
       <span class="slash">/</span>
@@ -93,7 +93,15 @@
     </header>
 
     <div class="post-content">
-      <a id="more"></a><script>
+      <h3 id="一、什么是微服务"><a href="#一、什么是微服务" class="headerlink" title="一、什么是微服务?"></a>一、什么是微服务?</h3><p>微服务是一种面向服务的架构(SOA)风格（Java开发人员最重要的技能之一），其中，应用程序被构建为多个不同的小型服务的集合而不是单个应用程序。与单个程序不同的是，微服务让你可以同时运行多个独立的应用程序，而这些独立的应用程序可以使用不同的编码或编程语言来创建。庞大而又复杂的应用程序可以由多个可自行执行的简单而又独立的程序所组成。这些较小的程序组合在一起，可以提供庞大的单程序所具备的所有功能。</p>
+<p>微服务是一种面向服务的架构风格,具有灵活性和低成本两个特点.</p>
+<ol>
+<li><p>灵活性:由于这些较小的应用程序无需使用相同的编程语言,因此,开发人员可以使用他们最熟悉的语言,这是灵活性.</p>
+</li>
+<li><p>低成本:由于他们都用自己擅长的语言去开发,所以效率会高,相应的开发成本会降低.</p>
+<a id="more"></a></li>
+</ol>
+<script>
         document.querySelectorAll('.github-emoji')
           .forEach(el => {
             if (!el.dataset.src) { return; }
@@ -121,6 +129,11 @@
   </article>
   <div class="toc-container">
     
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、什么是微服务"><span class="toc-text">一、什么是微服务?</span></a></li></ol>
+  </div>
+
 
 
   </div>
@@ -169,19 +182,14 @@
       <div class="post-nav-item post-nav-next">
         
           <span>〈 </span>
-          <a href="/2019/11/12/一文道尽设计模式/" rel="next" title="一文道尽设计模式">
-          一文道尽设计模式
+          <a href="/2019/11/14/Java排坑指南-非公开版/" rel="next" title="Java排坑指南(非公开版)">
+          Java排坑指南(非公开版)
           </a>
         
       </div>
   
       <div class="post-nav-item post-nav-prev">
           
-          <a href="/2019/11/13/WEB架构演进之路/" rel="prev" title="WEB架构演进之路">
-            WEB架构演进之路
-          </a>
-          <span>〉</span>
-        
       </div>
     </div>
   
