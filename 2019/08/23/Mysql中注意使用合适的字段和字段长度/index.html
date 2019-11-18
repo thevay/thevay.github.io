@@ -93,9 +93,9 @@
     </header>
 
     <div class="post-content">
-      <h3 id="记录中的常用信息"><a href="#记录中的常用信息" class="headerlink" title="记录中的常用信息"></a>记录中的常用信息</h3><p>下面是mysql创建一条记录时的常用重要信息，一般包含：名称、类型、长度、属性、非空、Zero填充、自增等<br>信息需要进行配置。</p>
+      <p>数据库设计中你所应知道的一些简单小事儿。</p>
 <a id="more"></a>
-
+<h3 id="记录中的常用信息"><a href="#记录中的常用信息" class="headerlink" title="记录中的常用信息"></a>记录中的常用信息</h3><p>下面是mysql创建一条记录时的常用重要信息，一般包含：名称、类型、长度、属性、非空、Zero填充、自增等<br>信息需要进行配置。</p>
 <p><img src="http://pztbc1npk.bkt.clouddn.com/mysql2.png" alt="upload successful"></p>
 <h3 id="字段类型选择"><a href="#字段类型选择" class="headerlink" title="字段类型选择"></a>字段类型选择</h3><p><img src="http://pztbc1npk.bkt.clouddn.com/mysql1.png" alt="upload successful"></p>
 <p>字段类型有很多种，而常用的就那几种：</p>
@@ -188,7 +188,7 @@
                 var guest_info = 'nick,mail,link'.split(',').filter(function(item){
                     return GUEST_INFO.indexOf(item) > -1
                 });
-                var notify = 'false' == true;
+                var notify = 'true' == true;
                 var verify = 'true' == true;
                 var valine = new Valine();
                 valine.init({
