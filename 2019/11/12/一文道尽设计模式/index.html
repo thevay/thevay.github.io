@@ -88,7 +88,7 @@
       <span id="busuanzi_value_page_pv"></span> 点击
     </span>
       <span class="slash">/</span>
-      <span class="read">阅读耗时 3分</span>
+      <span class="read">阅读耗时 5分</span>
     </header>
 
     <div class="post-content">
@@ -153,6 +153,40 @@
 <blockquote>
 <p>实现方式：反射、反序列化</p>
 </blockquote>
+<h3 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h3><p>最被广泛应用的设计模式——工厂模式</p>
+<p>为什么需要工厂模式？</p>
+<p>工厂模式属于创建型模式。顾名思义，工厂就是用来生产产品，例如汽车工厂，生产汽车;粮食工厂，生产粮食等。<br>在面向对象软件开发领域，自然是用这种模式来生产对象。</p>
+<p>保证软件设计中的开闭原则不被违背，对扩展开发，对修改关闭。简言之，可以在已有代码基础上加入新的代码，但是<br>不允许修改写好的代码。</p>
+<p>工厂模式相比直接使用new创建一个对象更利于解耦。因为new创建的对象一般都是具体的底层的一个对象 </p>
+<blockquote>
+<p>new操作本身就是一个耦合操作。</p>
+</blockquote>
+<p>例如：</p>
+<p>解耦前：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Service</span> </span>{</span><br><span class="line">    Dao dao = <span class="keyword">new</span> JpaDao(); ❶</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">service</span><span class="params">()</span></span>{</span><br><span class="line">      <span class="comment">//使用dao进行一系列持久层操作</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>解耦后:</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Service</span> </span>{</span><br><span class="line">    Dao dao = DaoFactory.getDao(); ❶</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">service</span><span class="params">()</span></span>{</span><br><span class="line">    <span class="comment">//使用dao进行一系列持久层操作</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DaoFactory</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Dao <span class="title">getDao</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> JpaDao(); ❷</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这样优化后有一个明显好处，以后不管团队换啥持久层实现，所有的Service类是不需要再动了，<br>但是DaoFactory中的代码还是要修改，问题没有根本性解决，想完成解耦，必须拿掉new逻辑.<br>如何做？答案是：反射、配置方式，如下：</p>
+<p>1) 创建config.properties文件</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dao=com.example.demo.pattern.factory.JpaDao</span><br></pre></td></tr></tbody></table></figure>
+
+<p>2) 修改 DaoFactory</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DaoFactory</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Dao <span class="title">getDao</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line">        Properties prop = <span class="keyword">new</span> Properties();</span><br><span class="line">        prop.load(DaoFactory.class.getClassLoader().getResourceAsStream(<span class="string">"config.properties"</span>));</span><br><span class="line">        Class&lt;?&gt; dao = Class.forName((String) prop.get(<span class="string">"dao"</span>));</span><br><span class="line">        <span class="keyword">return</span> (Dao) dao.newInstance();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>后续再要修改Dao实现方式，只需要提供对应的xxxDao类，并将其全类名配置在config.properties中即可。<br>所有的Service类中获取Dao的方式还是通过DaoFactory.getDao()，再也不需要修改了。</p>
+<ol>
+<li>简单工厂模式</li>
+</ol>
+<p>简单工厂模式是工厂模式的第一种形式，又叫静态工厂模式。顾名思义，因为这种工厂模式中获取对象的方法一般都定义成静态方法，形式如下：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> </span>{</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;R,P&gt; <span class="function">R <span class="title">getInstance</span><span class="params">(P type)</span></span>{</span><br><span class="line">        <span class="comment">//根据传入的type不同做if else判断返回不同类型的对象。</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>或者</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> </span>{</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;R,P&gt; <span class="function">R <span class="title">getInstance01</span><span class="params">()</span></span>{</span><br><span class="line">        <span class="comment">//创建一种类型的对象</span></span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;R,P&gt; <span class="function">R <span class="title">getInstance02</span><span class="params">()</span></span>{</span><br><span class="line">        <span class="comment">//创建另一种类型的对象</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
 <p>Best Ref: <a href="https://mp.weixin.qq.com/s/wb_INuq8cQ0p8hGtIYf0uQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/wb_INuq8cQ0p8hGtIYf0uQ</a></p>
 <script>
         document.querySelectorAll('.github-emoji')
@@ -181,7 +215,7 @@
     
   <div id="toc" class="toc-article">
     <strong class="toc-title">目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#学习设计模式从忘记模式开始"><span class="toc-text">学习设计模式从忘记模式开始</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#单例模式"><span class="toc-text">单例模式</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#学习设计模式从忘记模式开始"><span class="toc-text">学习设计模式从忘记模式开始</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#单例模式"><span class="toc-text">单例模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工厂模式"><span class="toc-text">工厂模式</span></a></li></ol>
   </div>
 
 
@@ -199,7 +233,7 @@
                     return GUEST_INFO.indexOf(item) > -1
                 });
                 var notify = 'false' == true;
-                var verify = 'false' == true;
+                var verify = 'true' == true;
                 var valine = new Valine();
                 valine.init({
                     el: '#valine_thread',
@@ -207,9 +241,9 @@
                     verify: verify,
                     appId: "c5nACLtjaK7VBhs0HF1sWYdI-gzGzoHsz",
                     appKey: "Ch0YJ5jvWmsTlOTruXAilVcr",
-                    placeholder: "Just go go",
+                    placeholder: "ヾﾉ≧∀≦)o快来评论一下吧!",
                     pageSize:'10',
-                    avatar:'mm',
+                    avatar:'robohash',
                     lang:'zh-cn'
                 })
             </script>
@@ -259,8 +293,8 @@
   <footer class="footer text-center">
     <div id="bottom-inner">
         <a class="bottom-item" href="https://thevay.github.io/">首页</a> |
-        <a class="bottom-item" href="https://thevay.github.io/" target="_blank">主站</a> |
-        <a class="bottom-item" href="https://github.com/thevay" target="_blank">GitHub</a>
+        <a class="bottom-item" href="https://github.com/thevay" target="_blank">GitHub</a> |
+        <a class="bottom-item" href="#>">联系邮箱:thevay@163.com</a>
     </div>
 </footer>
   
