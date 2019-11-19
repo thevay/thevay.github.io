@@ -54,6 +54,31 @@
     
     
     <entry>
+      <title>WEB架构演进之路</title>
+      <link href="/2019/11/13/WEB%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF/"/>
+      <url>/2019/11/13/WEB%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF/</url>
+      
+        <content type="html"><![CDATA[<p>机械制图的时候，通常使用三视图来描述一个机械零件，分别从正视、侧视、俯视三个角度对一个零件绘图，从而全面描述一个零件的结构。软件架构设计中常用的是4+1试图模型。</p><a id="more"></a><blockquote><p>多角度架构描述方法：1. 从演化、模式、要素三个维度描述网站整体架构2. 从性能、可用性、伸缩性、扩展性、安全这五个要素描述网站架构3. 从整体和局部描述网站架构方法4. 从架构师做事的角度回顾网站技术架构 </p></blockquote><p>大型互联网应用系统特点：</p><ol><li>高并发、大流量: 谷歌日均PV35亿 </li><li>高可用: 7乘24不间断服务</li><li>海量数据: Facebook每周上传照片10亿</li><li>用户分布广，网络复杂: 为全球用户提供服务</li><li>安全环境恶劣: 大型网站几乎没听都会被黑客攻击</li><li>需求快速变更，发布频繁: Office每年发布，大型网站每周发布，中小型网站一天发布几十次</li><li>渐进式发展: 好的互联网产品都是慢慢运营出来的</li></ol><h3 id="1-gt-初始网站架构："><a href="#1-gt-初始网站架构：" class="headerlink" title="1> 初始网站架构："></a>1&gt; 初始网站架构：</h3><p><img src="http://pztbc1npk.bkt.clouddn.com/arch1.png" alt="arch1"><br>应用程序、数据库、文件等所有资源都在一台服务器上</p><h3 id="2-gt-应用服务和数据服务分离"><a href="#2-gt-应用服务和数据服务分离" class="headerlink" title="2> 应用服务和数据服务分离"></a>2&gt; 应用服务和数据服务分离</h3><p>应用和数据分离后整个网站使用三台服务器：应用服务器、文件服务器和数据库服务器<br>应用服务器主要处理大量业务逻辑：需要更强大CPU<br>数据服务器：需要更快速的磁盘检索和数据缓存<br>文件服务器需要存储大量用户上传的文件：需要更大的硬盘<br><img src="http://pztbc1npk.bkt.clouddn.com/arch2.png" alt="arch2"></p><p>并发处理能力和数据存储空间得到改善，但是随着用户逐渐增多，数据库压力增加导致访问延迟</p><h3 id="3-gt-使用缓存提高性能"><a href="#3-gt-使用缓存提高性能" class="headerlink" title="3> 使用缓存提高性能"></a>3&gt; 使用缓存提高性能</h3><p>网站范文遵循二八定律：80%的业务访问集中在20%数据上。<br>缓存方式：</p><ol><li>缓存在应用服务器上的本地缓存：受本身内存限制，缓存数量有限</li><li>缓存在专门的分布式缓存服务器上的远程缓存： 使用集群方式，理论上可以做到不受限的缓存服务<br><img src="http://pztbc1npk.bkt.clouddn.com/arch3.png" alt="arch3"></li></ol><p>使用缓存后，数据访问压力得到有效缓解，但单一应用服务器能够处理的请求连接有限，在访问高峰期，<br>应用服务器成为性能瓶颈。</p><h3 id="4-gt-使用应用服务器集群改善网站并发处理能力"><a href="#4-gt-使用应用服务器集群改善网站并发处理能力" class="headerlink" title="4> 使用应用服务器集群改善网站并发处理能力"></a>4&gt; 使用应用服务器集群改善网站并发处理能力</h3><p>使用集群是解决高并发、海量数据问题的常用手段。是可伸缩集群架构设计中较为简单成熟的一种。<br><img src="http://pztbc1npk.bkt.clouddn.com/arch4.png" alt="arch4"></p><p>通过负载均衡调度服务器，可将用户请求分发到应用服务器集群中的任何一台服务器上，使负载压力不再成为网站的瓶颈。</p><h3 id="5-gt-数据库读写分离"><a href="#5-gt-数据库读写分离" class="headerlink" title="5> 数据库读写分离"></a>5&gt; 数据库读写分离</h3><p>缓存后，大部分数据读操作可以通过直接访问缓存，但仍有一部分读操作（缓存访问不命中、缓存过期）和全部的写操作需<br>要访问数据库，一定规模后，数据库因负载压力过高而成为网站的瓶颈。</p><p>大部分主流数据库提供主从热备功能，通过主从关系可将一台数据库服务器数据同步到另一台机器，利用这一功能，可以实现<br>数据库读写分离，从而改善数据库负载压力<br><img src="http://pztbc1npk.bkt.clouddn.com/arch5.png" alt="arch5"></p><p>写数据时，访问主数据库，主数据库通过主从复制机制将数据同步到从数据库。读数据时，可以通过从数据库获得数据。为了便<br>于应用程序访问读写分离后的数据库，通常在应用服务器端使用专门的数据访问模块，使读写分离对应用透明。</p><h3 id="6-gt-使用反向代理和CDN加速"><a href="#6-gt-使用反向代理和CDN加速" class="headerlink" title="6> 使用反向代理和CDN加速"></a>6&gt; 使用反向代理和CDN加速</h3><p>由于网路的复杂性，不用地区访问速度差别很大。主要使用CDN和反向代理加速访问速度。<br>CDN和反向代理的基本原理都是缓存，区别在于CDN部署在ISP的机房，用户请求可从局里最近的机房获取数据；方向代理部署<br>在网站的中心机房，请求到达首先访问反向代理服务器，如果服务器中缓存着用户请求资源则直接返回。<br><img src="http://pztbc1npk.bkt.clouddn.com/arch6.png" alt="arch6"></p><p>使用CDN和反向代理可以一方面加快用户访问速度，另一方面减轻后端服务器的负载压力</p><h3 id="7-gt-使用分布式文件系统和分布式数据库系统"><a href="#7-gt-使用分布式文件系统和分布式数据库系统" class="headerlink" title="7> 使用分布式文件系统和分布式数据库系统"></a>7&gt; 使用分布式文件系统和分布式数据库系统</h3><p>任何强大的单一服务器都满足不了持续增长的业务需求<br>数据库读写分离后拆分成两台服务器，随着业务发展依旧难以满足需求，这时，需要使用分布式数据库，文件系统也需要使用分布<br>式文件系统。<br><img src="http://pztbc1npk.bkt.clouddn.com/arch7.png" alt="arch7"></p><p>分布式数据库是数据库拆分的最后手段，常用的数据库拆分手段是业务分库，将不同业务的数据部署到不同的物理机。</p><h3 id="8-gt-使用NoSQL和搜索引擎"><a href="#8-gt-使用NoSQL和搜索引擎" class="headerlink" title="8> 使用NoSQL和搜索引擎"></a>8&gt; 使用NoSQL和搜索引擎</h3><p><img src="http://pztbc1npk.bkt.clouddn.com/arch8.png" alt="arch8"><br>NoSQL和搜索引擎都是互联网的技术手段，对可伸缩的分布式特性具有更好的支持。<br>应用服务器则通过一个统一数据访问模块访问各种数据，减轻应用程序管理诸多数据源的麻烦。</p><h3 id="9-gt-业务拆分"><a href="#9-gt-业务拆分" class="headerlink" title="9> 业务拆分"></a>9&gt; 业务拆分</h3><p>大型网站为了应对日益复杂的业务场景，可以通过分而治之的手段将整个网站业务分成不同的产品线，分归不同的业务团队负责。</p><p>具体到技术上，也会根据产品线划分，将一个网站拆分成不同的应用独立部署维护。应用之前可以通过超链接建立关系，也可以<br>通过消息队列进行数据分发，最多的还是通过访问同一个数据存储系统来构成一个关联的完整系统。<br><img src="http://pztbc1npk.bkt.clouddn.com/arch9.png" alt="arch9"></p><h3 id="10-gt-分布式服务"><a href="#10-gt-分布式服务" class="headerlink" title="10> 分布式服务"></a>10&gt; 分布式服务</h3><p>随着业务拆分越来越小，存储系统越来越庞大，应用系统的整体复杂度呈指数级增加，部署维护越来越困难。<br>在数万台服务器规模中，数据库系统连接数目是服务器规模的平方，导致数据库连接资源不足，拒绝服务。</p><p>每一个应用系统都需要执行许多相同的业务操作，比如用户管理、商品管理等，那么可以将这些功用的业务提取出来，独立部署。<br>由这些可服用的业务连接数据库，提供共用业务服务，而应用系统只需管理用户界面，通过分布式服务调用功用业务服务完成具<br>体操作。<br><img src="http://pztbc1npk.bkt.clouddn.com/arch10.png" alt="arch10"></p><p>大型网站的架构演化到这里，基本上大多数的技术问题都得以解决，侏儒跨数据中心的实时数据同步和具体业务相关的问题也都可<br>以通过组合改进现有技术架构来解决。</p><script>        document.querySelectorAll('.github-emoji')          .forEach(el => {            if (!el.dataset.src) { return; }            const img = document.createElement('img');            img.style = 'display:none !important;';            img.src = el.dataset.src;            img.addEventListener('error', () => {              img.remove();              el.style.color = 'inherit';              el.style.backgroundImage = 'none';              el.style.background = 'none';            });            img.addEventListener('load', () => {              img.remove();            });            document.body.appendChild(img);          });      </script>]]></content>
+      
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>服务调用幂等性实践</title>
       <link href="/2019/11/13/%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%B9%82%E7%AD%89%E6%80%A7%E5%AE%9E%E8%B7%B5/"/>
       <url>/2019/11/13/%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%B9%82%E7%AD%89%E6%80%A7%E5%AE%9E%E8%B7%B5/</url>
@@ -71,31 +96,6 @@
         <tags>
             
             <tag> 幂等性 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>WEB架构演进之路</title>
-      <link href="/2019/11/13/WEB%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF/"/>
-      <url>/2019/11/13/WEB%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF/</url>
-      
-        <content type="html"><![CDATA[<h3 id=""><a href="#" class="headerlink" title=""></a></h3><a id="more"></a><script>        document.querySelectorAll('.github-emoji')          .forEach(el => {            if (!el.dataset.src) { return; }            const img = document.createElement('img');            img.style = 'display:none !important;';            img.src = el.dataset.src;            img.addEventListener('error', () => {              img.remove();              el.style.color = 'inherit';              el.style.backgroundImage = 'none';              el.style.background = 'none';            });            img.addEventListener('load', () => {              img.remove();            });            document.body.appendChild(img);          });      </script>]]></content>
-      
-      
-      <categories>
-          
-          <category> 架构 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 架构 </tag>
             
         </tags>
       
