@@ -89,7 +89,7 @@
       <span id="busuanzi_value_page_pv"></span> 点击
     </span>
       <span class="slash">/</span>
-      <span class="read">阅读耗时 3分</span>
+      <span class="read">阅读耗时 4分</span>
     </header>
 
     <div class="post-content">
@@ -98,8 +98,7 @@
 </blockquote>
 <a id="more"></a>
 
-<p>###一、埋点技术</p>
-<p>代码埋点：</p>
+<h3 id="一、埋点技术"><a href="#一、埋点技术" class="headerlink" title="一、埋点技术"></a>一、埋点技术</h3><p>代码埋点：</p>
 <p>所谓的代码埋点就是在你需要统计数据的地方植入N行代码，统计用户的关键行为。比如你想统计首页某个banner的点击量，上报的数据可以采用KEY-VALUE形式，我们定义 KEY为「CLICK_ADD_BTN」，VALUE的值为点击的次数。当用户点击banner时，banner详情的代码会通过按钮的「回调」来触发执行，程序猿在业务代码执行完后，又加上了统计代码，把「CLICK_ADD_BTN」对应的VALUE加1，banner被统计到了一次使用。</p>
 <p>代码埋点的优点：</p>
 <ol>
@@ -124,9 +123,18 @@
 <p>因为无埋点对页面所有元素进行埋点，那么这个页面每个元素被点击的概率你也就知道，对点击概率比较大的元素可以进行深入分析。</p>
 <p>无埋点的缺点：</p>
 <p>由于无埋点方案所有的元素数据都收集，会给数据传输和服务器带来较大的压力。</p>
-<p>###二、数据埋点方式</p>
-<p>1、公司研发在自己的产品当中注入统计代码，搭建相应的后台查询，这种代价比较大。<br>2、集成第三方统计的SDK，比如友盟、百度移动统计、Sensors Data、GrowingIO、Talking Data等。</p>
-<p>###三、如何进行数据埋点</p>
+<h3 id="二、数据埋点方式"><a href="#二、数据埋点方式" class="headerlink" title="二、数据埋点方式"></a>二、数据埋点方式</h3><ol>
+<li>公司研发在自己的产品当中注入统计代码，搭建相应的后台查询，这种代价比较大。</li>
+<li>集成第三方统计的SDK，比如友盟、百度移动统计、Sensors Data、GrowingIO、Talking Data等。</li>
+</ol>
+<h3 id="三、如何进行数据埋点"><a href="#三、如何进行数据埋点" class="headerlink" title="三、如何进行数据埋点"></a>三、如何进行数据埋点</h3><ol>
+<li>明确目标</li>
+</ol>
+<p>经常有人问我说我要获取那些数据来进行数据分析，其实这个问题不应该问别人，应该问问你自己，你是想用这个数据干什么，如果你想绘制基础的人群画像你就需要获取用户机型、网络类型、操作系统，IP地域等数据；如果你想分析每一个注册转化率，你就需要获取每一个步骤的点击次数，然后制作成漏斗，看那一步转化率出现了问题；目的不一样，获取的数据也不一样，使用的埋点技术也不一样，我们无论做什么事情都不能忘了我们的目的！</p>
+<ol start="2">
+<li>获取相应数据</li>
+</ol>
+<p>业务不同，目的不同获取的数据也不同，这里我只说一些比较共性的数据。</p>
 <script>
         document.querySelectorAll('.github-emoji')
           .forEach(el => {
@@ -155,6 +163,11 @@
   </article>
   <div class="toc-container">
     
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、埋点技术"><span class="toc-text">一、埋点技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、数据埋点方式"><span class="toc-text">二、数据埋点方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、如何进行数据埋点"><span class="toc-text">三、如何进行数据埋点</span></a></li></ol>
+  </div>
+
 
 
   </div>
