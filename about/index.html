@@ -19,7 +19,7 @@
   
   
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <title>tag: SQL设计 [ thevay ]</title>
+  <title>about [ thevay ]</title>
   
     <!-- stylesheets list from config.yml -->
     
@@ -58,7 +58,7 @@
           
       
           
-            <li class="pure-menu-item"><a href="/about" class="pure-menu-link">关于</a></li>
+            <li class="pure-menu-item actived"><a href="/about" class="pure-menu-link">关于</a></li>
           
       
   </ul>
@@ -68,22 +68,33 @@
 
   <div class="container" id="content-outer">
     <div class="inner" id="content-inner">
+      <article class="post page" id="page">
+  <header class="post-header text-center">
+  </header>
+  <div class="post-content">
+    
+        <script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>
       
-<div class="page tag-page" id="tag">
-  <h3 title="SQL设计下的文章">SQL设计</h3>
-  
-    <div class="tag-item">
-      
-        <a href="/2019/08/23/Mysql中注意使用合适的字段和字段长度/">
-          Mysql中注意使用合适的字段和字段长度
-        </a>
-      
-      <time class="time" datetime="2019-08-23T01:18:00.000Z">
-        2019-08-23
-      </time>
-    </div>
-  
-</div>
+  </div>
+</article>
     </div>
 
     

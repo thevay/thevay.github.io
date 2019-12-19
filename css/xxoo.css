@@ -197,7 +197,7 @@ body {
   display: -ms-flexbox;
   display: flex;
   background: #fefefe;
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
 }
 .home-menu .pure-menu-heading {
   padding: 0;
