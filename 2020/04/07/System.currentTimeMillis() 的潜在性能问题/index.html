@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#202020">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+  
+  
+    <meta name="keywords" content="Java,">
+  
+
+  
+    <meta name="description" content="thevay">
+  
+  
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <title>System.currentTimeMillis() 的潜在性能问题 [ thevay ]</title>
+  
+    <!-- stylesheets list from config.yml -->
+    
+      <link rel="stylesheet" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css">
+    
+      <link rel="stylesheet" href="/css/xoxo.css">
+    
+  
+</head>
+
+
+<body>
+  <div class="nav-container">
+    <nav class="home-menu pure-menu pure-menu-horizontal">
+  <a class="pure-menu-heading" href="/">
+    <img class="avatar" src="http://thevay.github.io/images/logo.png">
+    <span class="title">thevay</span>
+  </a>
+
+  <ul class="pure-menu-list clearfix">
+      
+          
+            <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/archives" class="pure-menu-link">归档</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/tags" class="pure-menu-link">标签</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/search" class="pure-menu-link">搜索</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/about" class="pure-menu-link">关于</a></li>
+          
+      
+  </ul>
+   
+</nav>
+  </div>
+
+  <div class="container" id="content-outer">
+    <div class="inner" id="content-inner">
+      <link rel="stylesheet" href="/css/needsharebutton.min.css">
+<div class="post-container">
+  <article class="post" id="post">
+    <header class="post-header text-center">
+      <h1 class="title">
+        System.currentTimeMillis() 的潜在性能问题
+      </h1>
+      <span>
+        
+        <time class="time" datetime="2020-04-07T01:32:28.298Z">
+        2020-04-07
+      </time>
+        
+      </span>
+      <span class="slash">/</span>
+      <span class="post-meta">
+      <span class="post-tags">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+      </span>
+    </span>
+      <span class="slash">/</span>
+      <span class="read">
+      <span id="busuanzi_value_page_pv"></span> 点击
+    </span>
+      <span class="slash">/</span>
+      <span class="read">阅读耗时 3分</span>
+    </header>
+
+    <div class="post-content">
+      <p>System.currentTimeMillis()是极其常用的基础Java API，广泛地<em>用来获取时间戳或测量代码执行时长</em>等，在我们的印象中应该快如闪电。但实际上在并发调用或者特别频繁调用它的情况<br>下（比如一个业务繁忙的接口，或者吞吐量大的需要取得时间戳的流式程序），其性能表现会令人大跌眼镜。</p>
+<a id="more"></a>
+<h3 id="先来看一段程序"><a href="#先来看一段程序" class="headerlink" title="先来看一段程序"></a>先来看一段程序</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CurrentTimeMillisPerfDemo</span> </span>{</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> COUNT = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line">		<span class="keyword">long</span> beginTime = System.nanoTime();</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; COUNT; i++) {</span><br><span class="line">			System.currentTimeMillis();</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="keyword">long</span> elapsedTime = System.nanoTime() - beginTime;</span><br><span class="line">		System.out.println(<span class="string">"100 System.currentTimeMillis() serial calls: "</span> + elapsedTime + <span class="string">" ns"</span>);</span><br><span class="line"></span><br><span class="line">		CountDownLatch startLatch = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">		CountDownLatch endLatch = <span class="keyword">new</span> CountDownLatch(COUNT);</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; COUNT; i++) {</span><br><span class="line">			<span class="keyword">new</span> Thread(() -&gt; {</span><br><span class="line">				<span class="keyword">try</span> {</span><br><span class="line">				startLatch.await();</span><br><span class="line">				System.currentTimeMillis();</span><br><span class="line">				} <span class="keyword">catch</span> (InterruptedException e) {</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">				} <span class="keyword">finally</span> {</span><br><span class="line">				endLatch.countDown();</span><br><span class="line">				}</span><br><span class="line">			}).start();</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		beginTime = System.nanoTime();</span><br><span class="line">		startLatch.countDown();</span><br><span class="line">		endLatch.await();</span><br><span class="line">		elapsedTime = System.nanoTime() - beginTime;</span><br><span class="line">		System.out.println(<span class="string">"100 System.currentTimeMillis() parallel calls: "</span> + elapsedTime + <span class="string">" ns"</span>);</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>执行结果如下：</p>
+<p><img src="https://i.loli.net/2020/04/07/wvRJuzhl63LyIbE.jpg" alt="result"><br>可见，并发调用System.currentTimeMillis()一百次，耗费的时间是单线程调用一百次的250倍。如果单线程的调用频次增加（比如达到每毫秒数次的地步），也会观察到类似的情况。实际上在极端情况下，System.currentTimeMillis()的耗时甚至会比创建一个简单的对象实例还要多。</p>
+<h3 id="为什么会这样？"><a href="#为什么会这样？" class="headerlink" title="为什么会这样？"></a>为什么会这样？</h3><p>来到HotSpot源码的hotspot/src/os/linux/vm/os_linux.cpp文件中，有一个javaTimeMillis()方法，这就是System.currentTimeMillis()的native实现。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">jlong os::javaTimeMillis() {</span><br><span class="line">	timeval time;</span><br><span class="line">	<span class="keyword">int</span> status = gettimeofday(&amp;time, NULL);</span><br><span class="line">	<span class="keyword">assert</span>(status != -<span class="number">1</span>, <span class="string">"linux error"</span>);</span><br><span class="line">	<span class="keyword">return</span> jlong(time.tv_sec) * <span class="number">1000</span> + jlong(time.tv_usec / <span class="number">1000</span>);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>简单来讲就是：</p>
+<ul>
+<li>调用gettimeofday()需要从用户态切换到内核态；</li>
+<li>gettimeofday()的表现受Linux系统的计时器（时钟源）影响，在HPET计时器下性能尤其差；</li>
+<li>系统只有一个全局时钟源，高并发或频繁访问会造成严重的争用。</li>
+</ul>
+<p>HPET计时器性能较差的原因是会将所有对时间戳的请求串行执行。TSC计时器性能较好，因为有专用的寄存器来保存时间戳。缺点是可能不稳定，因为它是纯硬件的计时器，频率可变（与处理器的CLK信号有关）。</p>
+<h3 id="如何解决？"><a href="#如何解决？" class="headerlink" title="如何解决？"></a>如何解决？</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CurrentTimeMillisClock</span> </span>{</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">long</span> now;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">CurrentTimeMillisClock</span><span class="params">()</span> </span>{</span><br><span class="line">		<span class="keyword">this</span>.now = System.currentTimeMillis();</span><br><span class="line">		scheduleTick();</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scheduleTick</span><span class="params">()</span> </span>{</span><br><span class="line">	<span class="keyword">new</span> ScheduledThreadPoolExecutor(<span class="number">1</span>, runnable -&gt; {</span><br><span class="line">		Thread thread = <span class="keyword">new</span> Thread(runnable, <span class="string">"current-time-millis"</span>);</span><br><span class="line">		thread.setDaemon(<span class="keyword">true</span>);</span><br><span class="line">		<span class="keyword">return</span> thread;</span><br><span class="line">		}).scheduleAtFixedRate(() -&gt; {</span><br><span class="line">		now = System.currentTimeMillis();</span><br><span class="line">		}, <span class="number">1</span>, <span class="number">1</span>, TimeUnit.MILLISECONDS);</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">now</span><span class="params">()</span> </span>{</span><br><span class="line">		<span class="keyword">return</span> now;</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> CurrentTimeMillisClock <span class="title">getInstance</span><span class="params">()</span> </span>{</span><br><span class="line">		<span class="keyword">return</span> SingletonHolder.INSTANCE;</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonHolder</span> </span>{</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> CurrentTimeMillisClock INSTANCE = <span class="keyword">new</span> CurrentTimeMillisClock();</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>使用的时候，直接 CurrentTimeMillisClock.getInstance().now()就可以了。</p>
+<p>不过，在System.currentTimeMillis()的效率没有影响程序整体的效率时，就完全没有必要做这种优化，这只是为极端情况准备的。</p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>
+    </div>
+
+    <div style="witdh:100%;text-align:center">
+      welcome to reprint ~ <br/>
+      <div id="share-button"class="need-share-button-default" data-share-position="Center" data-share-networks="Wechat,Weibo,RenRen,Facebook,GooglePlus,Linkedin">Share</div>
+    </div>
+  </article>
+  <div class="toc-container">
+    
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#先来看一段程序"><span class="toc-text">先来看一段程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么会这样？"><span class="toc-text">为什么会这样？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何解决？"><span class="toc-text">如何解决？</span></a></li></ol>
+  </div>
+
+
+
+  </div>
+  <script src="/js/needsharebutton.js"></script>
+  <script>
+    new needShareButton(document.getElementById('share-button'));
+  </script>
+</div>
+<section id="comments">
+      <div id="valine_thread" style="margin: 30px;"></div>
+            <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+            <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+            <script>
+                var GUEST_INFO = ['nick','mail','link'];
+                var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+                    return GUEST_INFO.indexOf(item) > -1
+                });
+                var notify = 'true' == true;
+                var verify = 'true' == true;
+                var valine = new Valine();
+                valine.init({
+                    el: '#valine_thread',
+                    notify: notify,
+                    verify: verify,
+                    appId: "c5nACLtjaK7VBhs0HF1sWYdI-gzGzoHsz",
+                    appKey: "Ch0YJ5jvWmsTlOTruXAilVcr",
+                    placeholder: "ヾﾉ≧∀≦)o快来评论一下吧!",
+                    pageSize:'10',
+                    avatar:'robohash',
+                    lang:'zh-cn'
+                })
+            </script>
+    </section>
+<div class="copyright">
+    <span>本作品采用</span>
+    <a href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>
+    <span>进行许可。 转载时请注明原文链接。</span>
+</div>
+<div class="share" style="width: 100%;">
+  <img src="http://pztbc1npk.bkt.clouddn.com/qrcode.png" alt="IamCoder" style="margin: auto; display: block;"/>
+  <div style="margin: auto; text-align: center; font-size: 0.8em; color: grey;">老铁们关注走一走，不迷路</div>
+</div>
+
+  
+    <div class="post-nav">
+      <div class="post-nav-item post-nav-next">
+        
+          <span>〈 </span>
+          <a href="/2019/12/11/如何做好数据埋点/" rel="next" title="如何做好数据埋点">
+          如何做好数据埋点
+          </a>
+        
+      </div>
+  
+      <div class="post-nav-item post-nav-prev">
+          
+      </div>
+    </div>
+  
+
+</script>
+
+    </div>
+
+    
+    
+  </div>
+  
+  <footer class="footer text-center">
+    <div id="bottom-inner">
+        <a class="bottom-item" href="https://thevay.github.io/">首页</a> |
+        <a class="bottom-item" href="https://github.com/thevay" target="_blank">GitHub</a> |
+        <a class="bottom-item" href="#>">联系邮箱:thevay@163.com</a>
+    </div>
+    <!-- 不蒜子统计 -->
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+    <span class="post-meta-divider">|</span>
+    本站访客数<span id="busuanzi_value_site_uv"></span>人
+</footer>
+  
+
+<script>
+  (function(window, document, undefined) {
+
+    var timer = null;
+
+    function returnTop() {
+      cancelAnimationFrame(timer);
+      timer = requestAnimationFrame(function fn() {
+        var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+        if (oTop > 0) {
+          document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+          timer = requestAnimationFrame(fn);
+        } else {
+          cancelAnimationFrame(timer);
+        }
+      });
+    }
+
+    var hearts = [];
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          setTimeout(callback, 1000 / 60);
+        }
+    })();
+    init();
+
+    function init() {
+      css(".heart{z-index:9999;width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: absolute;}.heart:after{top: -5px;}.heart:before{left: -5px;}");
+      attachEvent();
+      gameloop();
+      addMenuEvent();
+    }
+
+    function gameloop() {
+      for (var i = 0; i < hearts.length; i++) {
+        if (hearts[i].alpha <= 0) {
+          document.body.removeChild(hearts[i].el);
+          hearts.splice(i, 1);
+          continue;
+        }
+        hearts[i].y--;
+        hearts[i].scale += 0.004;
+        hearts[i].alpha -= 0.013;
+        hearts[i].el.style.cssText = "left:" + hearts[i].x + "px;top:" + hearts[i].y + "px;opacity:" + hearts[i].alpha + ";transform:scale(" + hearts[i].scale + "," + hearts[i].scale + ") rotate(45deg);background:" + hearts[i].color;
+      }
+      requestAnimationFrame(gameloop);
+    }
+
+    /**
+     * 给logo设置点击事件
+     * 
+     * - 回到顶部
+     * - 出现爱心
+     */
+    function attachEvent() {
+      var old = typeof window.onclick === "function" && window.onclick;
+      var logo = document.getElementById("logo");
+      if (logo) {
+        logo.onclick = function(event) {
+          returnTop();
+          old && old();
+          createHeart(event);
+        }
+      }
+      
+    }
+
+    function createHeart(event) {
+      var d = document.createElement("div");
+      d.className = "heart";
+      hearts.push({
+        el: d,
+        x: event.clientX - 5,
+        y: event.clientY - 5,
+        scale: 1,
+        alpha: 1,
+        color: randomColor()
+      });
+      document.body.appendChild(d);
+    }
+
+    function css(css) {
+      var style = document.createElement("style");
+      style.type = "text/css";
+      try {
+        style.appendChild(document.createTextNode(css));
+      } catch (ex) {
+        style.styleSheet.cssText = css;
+      }
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
+
+    function randomColor() {
+      // return "rgb(" + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + ")";
+      return "#F44336";
+    }
+
+    function addMenuEvent() {
+      var menu = document.getElementById('menu-main-post');
+      if (menu) {
+        var toc = document.getElementById('toc');
+        if (toc) {
+          menu.onclick = function() {
+            if (toc) {
+              if (toc.style.display == 'block') {
+                toc.style.display = 'none';
+              } else {
+                toc.style.display = 'block';
+              }
+            }
+          };
+        } else {
+          menu.style.display = 'none';
+        }
+      }
+    }
+
+  })(window, document);
+</script>
+
+  
+
+
+
+</body>
+</html>
