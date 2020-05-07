@@ -97,7 +97,7 @@
     </header>
 
     <div class="post-content">
-      <p>本地测试搭建Mysql主从服务，建议先安装测试好单个mysql服务，在进行主从配置。<em>Mysql主从服务也叫做<br>Replication、AB复制。简单理解，就是在数据库A（Master）中写入数据，数据库B（Slave）中会实时同步<br>数据。Mysql主从服务主要依赖于binlog，在Master上开启binlog后进行主从实时同步。</em>大概过程可以分为3<br>个步骤：1.主数据库(Master)将更改操作记录到binlog中。2.将Master的binlog事件(sql语句)同步本机上并记<br>录到relaylog里。3.从数据库(Slave)根据relaylog里面记录的sql语句顺序执行。</p>
+      <p>本地测试搭建Mysql主从服务,建议先安装测试好单个mysql服务,在进行主从配置.<em>Mysql主从服务也叫做Replication,<br>AB复制.简单理解,就是在数据库A(Master)中写入数据,数据库B(Slave)中会实时同步数据.Mysql主从服务主要依赖于<br>binlog,在Master上开启binlog后进行主从实时同步.</em>大概过程可以分为3个步骤:1.主数据库(Master)将更改操作记录<br>到binlog中.2.将Master的binlog事件(sql语句)同步本机上并记录到relaylog里.3.从数据库(Slave)根据relaylog里面<br>记录的sql语句顺序执行。</p>
 <a id="more"></a>
 
 <p>本地环境: win10<br>本地还没有安装过Mysql服务的话可以参考以下地址进行安装配置。<br><a href="https://www.cnblogs.com/laumians-notes/p/9069498.html" target="_blank" rel="noopener">https://www.cnblogs.com/laumians-notes/p/9069498.html</a><br>本文主要是针对已安装Mysql服务进行主从配置：</p>
