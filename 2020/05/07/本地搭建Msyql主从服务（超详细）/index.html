@@ -97,11 +97,10 @@
     </header>
 
     <div class="post-content">
-      <p>本地测试搭建Mysql主从服务，建议先安装测试好单个mysql服务，在进行主从配置。<em>Mysql主从服务也叫做Replication、AB复制。简单理解，就是在数据<br>库A（Master）中写入数据，数据库B（Slave）中会实时同步数据。Mysql主从服务主要依赖于binlog，在Master上开启binlog后进行主从实时同步。</em><br>大概过程可以分为3个步骤：1.主数据库（Master）将更改操作记录到binlog中。2.将Master的binlog事件(sql语句)同步本机上并记录到relaylog里。<br>3.从数据库（Slave）根据relaylog里面记录的sql语句顺序执行。</p>
+      <p>本地测试搭建Mysql主从服务，建议先安装测试好单个mysql服务，在进行主从配置。<em>Mysql主从服务也叫做<br>Replication、AB复制。简单理解，就是在数据库A（Master）中写入数据，数据库B（Slave）中会实时同步<br>数据。Mysql主从服务主要依赖于binlog，在Master上开启binlog后进行主从实时同步。</em>大概过程可以分为3<br>个步骤：1.主数据库(Master)将更改操作记录到binlog中。2.将Master的binlog事件(sql语句)同步本机上并记<br>录到relaylog里。3.从数据库(Slave)根据relaylog里面记录的sql语句顺序执行。</p>
 <a id="more"></a>
 
-
-<p>本地环境: win10<br>本地还没有安装过Mysql服务的话可以参考：<a href="https://www.cnblogs.com/laumians-notes/p/9069498.html" target="_blank" rel="noopener">https://www.cnblogs.com/laumians-notes/p/9069498.html</a> 进行安装配置。<br>以下针对已安装Mysql服务进行主从配置：</p>
+<p>本地环境: win10<br>本地还没有安装过Mysql服务的话可以参考以下地址进行安装配置。<br><a href="https://www.cnblogs.com/laumians-notes/p/9069498.html" target="_blank" rel="noopener">https://www.cnblogs.com/laumians-notes/p/9069498.html</a><br>本文主要是针对已安装Mysql服务进行主从配置：</p>
 <h3 id="1-停止第一个Mysql服务"><a href="#1-停止第一个Mysql服务" class="headerlink" title="1.停止第一个Mysql服务"></a>1.停止第一个Mysql服务</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">打开控制面试 -&gt;管理工具 -&gt; 打开本地服务 -&gt; 找到MYSQL,停止服务。</span><br></pre></td></tr></tbody></table></figure>
 
 <h3 id="2-复制第一个MySQL服务的安装目录，并将新目录命名为mysql2"><a href="#2-复制第一个MySQL服务的安装目录，并将新目录命名为mysql2" class="headerlink" title="2.复制第一个MySQL服务的安装目录，并将新目录命名为mysql2"></a>2.复制第一个MySQL服务的安装目录，并将新目录命名为mysql2</h3><p><img src="https://i.loli.net/2020/05/07/h5HMzjnOmgWE71P.png" alt="image.png"></p>
@@ -140,6 +139,9 @@
 
 <blockquote>
 <p>在从库可以通过show slave status \G来查看一些参数。<br><em>当Slave_IO_Running和Slave_SQL_Running线程都为yes是主从复制配置成功！</em></p>
+</blockquote>
+<blockquote>
+<p>当Slave_IO_Running和Slave_SQL_Running线程有一个出现no的话都是不成的，这是可以通过show slave<br>status \G 来查看具体的报错信息后进行解决:例如场景的my.ini配置文件中的sever-id相同，网络不通等问<br>题通常会导致IO出错，SQL线程出错也会有相应的数据库表不存在等报错信息给出。都可以按需进行解决。</p>
 </blockquote>
 <script>
         document.querySelectorAll('.github-emoji')
@@ -221,8 +223,8 @@
       <div class="post-nav-item post-nav-next">
         
           <span>〈 </span>
-          <a href="/2020/04/07/System.currentTimeMillis() 的潜在性能问题/" rel="next" title="System.currentTimeMillis() 的潜在性能问题">
-          System.currentTimeMillis() 的潜在性能问题
+          <a href="/2020/04/24/javaCV/" rel="next" title="javaCV 序章">
+          javaCV 序章
           </a>
         
       </div>
