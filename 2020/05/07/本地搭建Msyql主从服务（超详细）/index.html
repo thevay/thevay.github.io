@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#202020">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+  
+  
+    <meta name="keywords" content="Mysql主从,">
+  
+
+  
+    <meta name="description" content="thevay">
+  
+  
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <title>搭建Mysql主从服务（超详细） [ thevay ]</title>
+  
+    <!-- stylesheets list from config.yml -->
+    
+      <link rel="stylesheet" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css">
+    
+      <link rel="stylesheet" href="/css/xoxo.css">
+    
+  
+</head>
+
+
+<body>
+  <div class="nav-container">
+    <nav class="home-menu pure-menu pure-menu-horizontal">
+  <a class="pure-menu-heading" href="/">
+    <img class="avatar" src="http://thevay.github.io/images/logo.png">
+    <span class="title">thevay</span>
+  </a>
+
+  <ul class="pure-menu-list clearfix">
+      
+          
+            <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/archives" class="pure-menu-link">归档</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/tags" class="pure-menu-link">标签</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/search" class="pure-menu-link">搜索</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/about" class="pure-menu-link">关于</a></li>
+          
+      
+  </ul>
+   
+</nav>
+  </div>
+
+  <div class="container" id="content-outer">
+    <div class="inner" id="content-inner">
+      <link rel="stylesheet" href="/css/needsharebutton.min.css">
+<div class="post-container">
+  <article class="post" id="post">
+    <header class="post-header text-center">
+      <h1 class="title">
+        搭建Mysql主从服务（超详细）
+      </h1>
+      <span>
+        
+        <time class="time" datetime="2020-05-07T05:18:33.000Z">
+        2020-05-07
+      </time>
+        
+      </span>
+      <span class="slash">/</span>
+      <span class="post-meta">
+      <span class="post-tags">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mysql主从/">Mysql主从</a></li></ul>
+      </span>
+    </span>
+      <span class="slash">/</span>
+      <span class="read">
+      <span id="busuanzi_value_page_pv"></span> 点击
+    </span>
+      <span class="slash">/</span>
+      <span class="read">阅读耗时 3分</span>
+    </header>
+
+    <div class="post-content">
+      <p>本地测试搭建Mysql主从服务，建议先安装测试好单个mysql服务，在进行主从配置。<em>Mysql主从服务也叫做Replication、AB复制。简单理解，就是在数据<br>库A（Master）中写入数据，数据库B（Slave）中会实时同步数据。Mysql主从服务主要依赖于binlog，在Master上开启binlog后进行主从实时同步。</em><br>大概过程可以分为3个步骤：1.主数据库（Master）将更改操作记录到binlog中。2.将Master的binlog事件(sql语句)同步本机上并记录到relaylog里。<br>3.从数据库（Slave）根据relaylog里面记录的sql语句顺序执行。</p>
+<a id="more"></a>
+
+
+<p>本地环境: win10<br>本地还没有安装过Mysql服务的话可以参考：<a href="https://www.cnblogs.com/laumians-notes/p/9069498.html" target="_blank" rel="noopener">https://www.cnblogs.com/laumians-notes/p/9069498.html</a> 进行安装配置。<br>以下针对已安装Mysql服务进行主从配置：</p>
+<h3 id="1-停止第一个Mysql服务"><a href="#1-停止第一个Mysql服务" class="headerlink" title="1.停止第一个Mysql服务"></a>1.停止第一个Mysql服务</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">打开控制面试 -&gt;管理工具 -&gt; 打开本地服务 -&gt; 找到MYSQL,停止服务。</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="2-复制第一个MySQL服务的安装目录，并将新目录命名为mysql2"><a href="#2-复制第一个MySQL服务的安装目录，并将新目录命名为mysql2" class="headerlink" title="2.复制第一个MySQL服务的安装目录，并将新目录命名为mysql2"></a>2.复制第一个MySQL服务的安装目录，并将新目录命名为mysql2</h3><p><img src="https://i.loli.net/2020/05/07/h5HMzjnOmgWE71P.png" alt="image.png"></p>
+<h3 id="3-编辑mysql2目录下的配置文件my-ini。修改配置文件中所有port的值，将第二个MySQL服务的端口改成3307。修改配置文件中basedir和datadir的值，改成指向第二个MySQL的安装目录的路径"><a href="#3-编辑mysql2目录下的配置文件my-ini。修改配置文件中所有port的值，将第二个MySQL服务的端口改成3307。修改配置文件中basedir和datadir的值，改成指向第二个MySQL的安装目录的路径" class="headerlink" title="3.编辑mysql2目录下的配置文件my.ini。修改配置文件中所有port的值，将第二个MySQL服务的端口改成3307。修改配置文件中basedir和datadir的值，改成指向第二个MySQL的安装目录的路径"></a>3.编辑mysql2目录下的配置文件my.ini。修改配置文件中所有port的值，将第二个MySQL服务的端口改成3307。修改配置文件中basedir和datadir的值，改成指向第二个MySQL的安装目录的路径</h3><ul>
+<li><p>主服务器配置(my.ini):</p>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">port=3306</span><br><span class="line">basedir="D:/master/MySQL/"</span><br><span class="line">datadir="D:/master/MySQL/data/"</span><br><span class="line">character-set-server=utf8</span><br><span class="line">server_id=1</span><br><span class="line">log-bin=mysql-bin#要生成的二进制日记文件名称</span><br><span class="line">binlog-do-db=test#同步的数据库</span><br><span class="line">binlog-ignore-db=mysql#不参与同步的数据库 ，例如mysql</span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>从服务器配置(my.ini):</p>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">port=3307</span><br><span class="line">basedir=D:\slave\mysql2</span><br><span class="line">datadir=D:\slave\mysql2\data</span><br><span class="line">server-id=2 </span><br><span class="line">log-bin=mysql-bin#开启了二进制文件</span><br><span class="line">binlog_do_db=follow#主从复制的数据库</span><br><span class="line">binlog_ignore_db=mysql#不参与主从复制的数据库，例如mysql</span><br></pre></td></tr></tbody></table></figure>
+
+</li>
+</ul>
+<h3 id="4-重新启动两个不同的mysql服务"><a href="#4-重新启动两个不同的mysql服务" class="headerlink" title="4.重新启动两个不同的mysql服务"></a>4.重新启动两个不同的mysql服务</h3><blockquote>
+<p>这里有一个小坑（如下图所示）<br><img src="https://i.loli.net/2020/05/07/Y9vuryVm1XLKadj.png" alt="image.png"></p>
+</blockquote>
+<p>解决办法：在重新开启从库服务时需要先在命令行中运行(mysql的bin目录下)：</p>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./mysqld --initialize-insecure --user=root --basedir=D:\JAVA\mysql2 --datadir=D:\JAVA\mysql2\data</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后再重新启动本地服务就可以正常启动了。</p>
+<h3 id="5-使用root用户登录到主数据库-Master-中-创建勇于主从复制的用户并授权"><a href="#5-使用root用户登录到主数据库-Master-中-创建勇于主从复制的用户并授权" class="headerlink" title="5.使用root用户登录到主数据库(Master)中,创建勇于主从复制的用户并授权"></a>5.使用root用户登录到主数据库(Master)中,创建勇于主从复制的用户并授权</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">user</span> <span class="string">'admin'</span>@<span class="string">'127.0.0.1'</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">'admin123'</span>;</span><br><span class="line"><span class="keyword">grant</span> <span class="keyword">replication</span> <span class="keyword">slave</span> <span class="keyword">on</span> . <span class="keyword">to</span> <span class="keyword">admin</span>@<span class="string">'127.0.0.1'</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>在从服务器上用创建的用户登录主服务器，看能不能成功，成功继续下面的步骤</p>
+</blockquote>
+<blockquote>
+<p>执行以下sql命令查看主服务器的bin-log日志文件名和position节点</p>
+</blockquote>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">master</span> <span class="keyword">status</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://i.loli.net/2020/05/07/g8PvLHaYJWMfkCF.png" alt="image.png"></p>
+<h3 id="6-在从库中开启数据复制功能"><a href="#6-在从库中开启数据复制功能" class="headerlink" title="6.在从库中开启数据复制功能"></a>6.在从库中开启数据复制功能</h3><p>首先执行以下sql</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">change</span> <span class="keyword">master</span> <span class="keyword">to</span> master_host=<span class="string">'127.0.0.1'</span>,master_port=<span class="number">3306</span>,master_user=<span class="string">'admin'</span>,master_password=<span class="string">'admin123'</span>,master_log_file=<span class="string">'mysql-bin.000001'</span>,master_log_pos=<span class="number">770</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>执行成功后打开数据复制功能</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>在从库可以通过show slave status \G来查看一些参数。<br><em>当Slave_IO_Running和Slave_SQL_Running线程都为yes是主从复制配置成功！</em></p>
+</blockquote>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>
+    </div>
+
+    <div style="witdh:100%;text-align:center">
+      welcome to reprint ~ <br/>
+      <div id="share-button"class="need-share-button-default" data-share-position="Center" data-share-networks="Wechat,Weibo,RenRen,Facebook,GooglePlus,Linkedin">Share</div>
+    </div>
+  </article>
+  <div class="toc-container">
+    
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-停止第一个Mysql服务"><span class="toc-text">1.停止第一个Mysql服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-复制第一个MySQL服务的安装目录，并将新目录命名为mysql2"><span class="toc-text">2.复制第一个MySQL服务的安装目录，并将新目录命名为mysql2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-编辑mysql2目录下的配置文件my-ini。修改配置文件中所有port的值，将第二个MySQL服务的端口改成3307。修改配置文件中basedir和datadir的值，改成指向第二个MySQL的安装目录的路径"><span class="toc-text">3.编辑mysql2目录下的配置文件my.ini。修改配置文件中所有port的值，将第二个MySQL服务的端口改成3307。修改配置文件中basedir和datadir的值，改成指向第二个MySQL的安装目录的路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-重新启动两个不同的mysql服务"><span class="toc-text">4.重新启动两个不同的mysql服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-使用root用户登录到主数据库-Master-中-创建勇于主从复制的用户并授权"><span class="toc-text">5.使用root用户登录到主数据库(Master)中,创建勇于主从复制的用户并授权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-在从库中开启数据复制功能"><span class="toc-text">6.在从库中开启数据复制功能</span></a></li></ol>
+  </div>
+
+
+
+  </div>
+  <script src="/js/needsharebutton.js"></script>
+  <script>
+    new needShareButton(document.getElementById('share-button'));
+  </script>
+</div>
+<section id="comments">
+      <div id="valine_thread" style="margin: 30px;"></div>
+            <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+            <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+            <script>
+                var GUEST_INFO = ['nick','mail','link'];
+                var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+                    return GUEST_INFO.indexOf(item) > -1
+                });
+                var notify = 'false' == true;
+                var verify = 'false' == true;
+                var valine = new Valine();
+                valine.init({
+                    el: '#valine_thread',
+                    notify: notify,
+                    verify: verify,
+                    appId: "c5nACLtjaK7VBhs0HF1sWYdI-gzGzoHsz",
+                    appKey: "Ch0YJ5jvWmsTlOTruXAilVcr",
+                    placeholder: "ヾﾉ≧∀≦)o快来评论一下吧!",
+                    pageSize:'10',
+                    avatar:'robohash',
+                    lang:'zh-cn'
+                })
+            </script>
+    </section>
+<div class="copyright">
+    <span>本作品采用</span>
+    <a href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>
+    <span>进行许可。 转载时请注明原文链接。</span>
+</div>
+<div class="share" style="width: 100%;">
+  <img src="https://i.loli.net/2020/04/07/6gyrxHXtAB1ZjUQ.jpg" alt="IamCoder" style="margin: auto; display: block;"/>
+  <div style="margin: auto; text-align: center; font-size: 0.8em; color: grey;">老铁们关注走一走，不迷路</div>
+</div>
+  
+    <div class="post-nav">
+      <div class="post-nav-item post-nav-next">
+        
+          <span>〈 </span>
+          <a href="/2020/04/07/System.currentTimeMillis() 的潜在性能问题/" rel="next" title="System.currentTimeMillis() 的潜在性能问题">
+          System.currentTimeMillis() 的潜在性能问题
+          </a>
+        
+      </div>
+  
+      <div class="post-nav-item post-nav-prev">
+          
+      </div>
+    </div>
+  
+
+</script>
+
+    </div>
+
+    
+    
+  </div>
+  
+  <footer class="footer text-center">
+    <div id="bottom-inner">
+        <a class="bottom-item" href="https://thevay.github.io/">首页</a> |
+        <a class="bottom-item" href="https://github.com/thevay" target="_blank">GitHub</a> |
+        <a class="bottom-item" href="#>">联系邮箱:thevay@163.com</a>
+    </div>
+    <!-- 不蒜子统计 -->
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+    <span class="post-meta-divider">|</span>
+    本站访客数<span id="busuanzi_value_site_uv"></span>人
+</footer>
+  
+
+<script>
+  (function(window, document, undefined) {
+
+    var timer = null;
+
+    function returnTop() {
+      cancelAnimationFrame(timer);
+      timer = requestAnimationFrame(function fn() {
+        var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+        if (oTop > 0) {
+          document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+          timer = requestAnimationFrame(fn);
+        } else {
+          cancelAnimationFrame(timer);
+        }
+      });
+    }
+
+    var hearts = [];
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          setTimeout(callback, 1000 / 60);
+        }
+    })();
+    init();
+
+    function init() {
+      css(".heart{z-index:9999;width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: absolute;}.heart:after{top: -5px;}.heart:before{left: -5px;}");
+      attachEvent();
+      gameloop();
+      addMenuEvent();
+    }
+
+    function gameloop() {
+      for (var i = 0; i < hearts.length; i++) {
+        if (hearts[i].alpha <= 0) {
+          document.body.removeChild(hearts[i].el);
+          hearts.splice(i, 1);
+          continue;
+        }
+        hearts[i].y--;
+        hearts[i].scale += 0.004;
+        hearts[i].alpha -= 0.013;
+        hearts[i].el.style.cssText = "left:" + hearts[i].x + "px;top:" + hearts[i].y + "px;opacity:" + hearts[i].alpha + ";transform:scale(" + hearts[i].scale + "," + hearts[i].scale + ") rotate(45deg);background:" + hearts[i].color;
+      }
+      requestAnimationFrame(gameloop);
+    }
+
+    /**
+     * 给logo设置点击事件
+     * 
+     * - 回到顶部
+     * - 出现爱心
+     */
+    function attachEvent() {
+      var old = typeof window.onclick === "function" && window.onclick;
+      var logo = document.getElementById("logo");
+      if (logo) {
+        logo.onclick = function(event) {
+          returnTop();
+          old && old();
+          createHeart(event);
+        }
+      }
+      
+    }
+
+    function createHeart(event) {
+      var d = document.createElement("div");
+      d.className = "heart";
+      hearts.push({
+        el: d,
+        x: event.clientX - 5,
+        y: event.clientY - 5,
+        scale: 1,
+        alpha: 1,
+        color: randomColor()
+      });
+      document.body.appendChild(d);
+    }
+
+    function css(css) {
+      var style = document.createElement("style");
+      style.type = "text/css";
+      try {
+        style.appendChild(document.createTextNode(css));
+      } catch (ex) {
+        style.styleSheet.cssText = css;
+      }
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
+
+    function randomColor() {
+      // return "rgb(" + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + ")";
+      return "#F44336";
+    }
+
+    function addMenuEvent() {
+      var menu = document.getElementById('menu-main-post');
+      if (menu) {
+        var toc = document.getElementById('toc');
+        if (toc) {
+          menu.onclick = function() {
+            if (toc) {
+              if (toc.style.display == 'block') {
+                toc.style.display = 'none';
+              } else {
+                toc.style.display = 'block';
+              }
+            }
+          };
+        } else {
+          menu.style.display = 'none';
+        }
+      }
+    }
+
+  })(window, document);
+</script>
+
+  
+
+
+
+</body>
+</html>
